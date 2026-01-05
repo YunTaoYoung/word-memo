@@ -170,12 +170,17 @@ export default function WordCard({
       </div>
 
       {/* Definitions */}
-      <div className="mb-2">
+      <div
+        className={`mb-2 text-sm text-gray-800 ${
+          !focused ? 'line-clamp-2' : ''
+        }`}
+      >
         {word.definitions.map((def, i) => (
-          <div key={i} className="text-sm mb-1">
+          <span key={i} className={!focused ? 'inline' : 'block mb-1'}>
             <span className="font-semibold text-gray-600">{def.pos}</span>{' '}
-            <span className="text-gray-800">{def.meaning}</span>
-          </div>
+            <span>{def.meaning}</span>
+            {!focused && i < word.definitions.length - 1 && <span className="mx-1">•</span>}
+          </span>
         ))}
       </div>
 
