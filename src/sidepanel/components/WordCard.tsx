@@ -25,15 +25,30 @@ export default function WordCard({
   const [isDeleting, setIsDeleting] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // 当高亮时滚动到视图中
+  // 当高亮时滚动到视图中（收缩状态）
   useEffect(() => {
     if (highlighted && cardRef.current) {
       cardRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'start', // 确保卡片头部在视口顶部,完整可见
+        block: 'start',
       });
     }
   }, [highlighted]);
+
+  // 当聚焦时，展开后确保完全可见
+  useEffect(() => {
+    if (focused && cardRef.current) {
+      // 等待展开动画完成后再滚动
+      setTimeout(() => {
+        if (cardRef.current) {
+          cardRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest', // 使用 nearest 避免不必要的滚动
+          });
+        }
+      }, 300); // 等待 CSS transition 完成
+    }
+  }, [focused]);
 
   const levelColor = MEMORY_COLORS[word.memoryState.level];
 

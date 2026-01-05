@@ -15,6 +15,7 @@ import { showToast, updateToast } from './toast';
  * 4. 检测视口可见性
  * 5. 监听页面导航和滚动
  * 6. 显示添加单词的 Toast 通知
+ * 7. 监听标签页切换刷新可见单词
  */
 
 let vocabulary: Set<string> = new Set();
@@ -76,6 +77,15 @@ async function init() {
     currentUrl = window.location.href;
     clearHighlights();
     scanPage();
+  });
+
+  // 监听页面可见性变化 (标签页切换)
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      console.log('[Word Memo] Tab became visible, updating visible words');
+      // 页面重新可见时，更新可见单词列表
+      updateVisibleWords();
+    }
   });
 }
 

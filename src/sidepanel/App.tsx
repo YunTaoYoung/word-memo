@@ -3,14 +3,22 @@
 import { useState, useEffect } from 'react';
 import Settings from './components/Settings';
 import WordList from './components/WordList';
+import VocabularyManagement from './components/VocabularyManagement';
+import WordDetail from './components/WordDetail';
 import { useWordStore } from './hooks/useWordStore';
 import { useSettings } from './hooks/useSettings';
 import { getReviewQueue } from '@/lib/storage';
+
+type Tab = 'current-page' | 'vocabulary';
+type View = 'list' | 'detail';
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [reviewQueue, setReviewQueue] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<Tab>('current-page');
+  const [currentView, setCurrentView] = useState<View>('list');
+  const [selectedWord, setSelectedWord] = useState<string | null>(null);
 
   const { words, visibleWords, hasReceivedVisibleWords, loading, highlightedWord, reload } = useWordStore();
   const { settings } = useSettings();
@@ -36,35 +44,100 @@ export default function App() {
     ? words.filter((word) => visibleWords.includes(word.word))
     : words;
 
+  // 处理词汇点击
+  const handleWordClick = (wordText: string) => {
+    setSelectedWord(wordText);
+    setCurrentView('detail');
+  };
+
+  // 返回列表
+  const handleBackToList = () => {
+    setCurrentView('list');
+    setSelectedWord(null);
+    reload(); // 刷新数据以获取最新状态
+  };
+
+  // 删除词汇后返回列表
+  const handleWordDeleted = () => {
+    reload();
+    if (currentView === 'detail') {
+      handleBackToList();
+    }
+  };
+
+  // 获取当前选中的词汇数据
+  const selectedWordData = selectedWord ? words.find((w) => w.word === selectedWord) : null;
+
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
       {/* Settings Modal */}
       {showSettings && <Settings onClose={() => setShowSettings(false)} />}
 
       {/* Header */}
-      <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0">
-        <h1 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-          📚 Word Memo
-        </h1>
-        <div className="flex items-center gap-2">
-          {!hasApiKey && (
-            <span className="text-xs text-red-500 mr-2">⚠️ 未配置API</span>
-          )}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="p-2 hover:bg-gray-100 rounded"
-            title="设置"
-          >
-            ⚙️
-          </button>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-2 hover:bg-gray-100 rounded"
-            title={collapsed ? '展开' : '折叠'}
-          >
-            {collapsed ? '▶' : '◀'}
-          </button>
+      <header className="bg-white border-b border-gray-200 flex-shrink-0">
+        {/* Title and Actions */}
+        <div className="h-16 flex items-center justify-between px-4">
+          <h1 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+            📚 Word Memo
+          </h1>
+          <div className="flex items-center gap-2">
+            {!hasApiKey && (
+              <span className="text-xs text-red-500 mr-2">⚠️ 未配置API</span>
+            )}
+            <button
+              onClick={() => setShowSettings(true)}
+              className="p-2 hover:bg-gray-100 rounded"
+              title="设置"
+            >
+              ⚙️
+            </button>
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-2 hover:bg-gray-100 rounded"
+              title={collapsed ? '展开' : '折叠'}
+            >
+              {collapsed ? '▶' : '◀'}
+            </button>
+          </div>
         </div>
+
+        {/* Tab Navigation */}
+        {!collapsed && (
+          <div className="flex border-t border-gray-200">
+            <button
+              onClick={() => {
+                setActiveTab('current-page');
+                setCurrentView('list');
+              }}
+              className={`
+                flex-1 px-4 py-3 text-sm font-medium transition-colors
+                ${
+                  activeTab === 'current-page'
+                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }
+              `}
+            >
+              当前页生词
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('vocabulary');
+                setCurrentView('list');
+              }}
+              className={`
+                flex-1 px-4 py-3 text-sm font-medium transition-colors
+                ${
+                  activeTab === 'vocabulary'
+                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                }
+              `}
+            >
+              词库管理
+            </button>
+          </div>
+        )}
       </header>
 
       {!collapsed && (
@@ -85,7 +158,7 @@ export default function App() {
           )}
 
           {/* Main Content */}
-          <main className="flex-1 overflow-auto p-4">
+          <main className="flex-1 overflow-auto">
             {loading ? (
               <div className="text-center py-20 text-gray-500">
                 <div className="animate-spin text-4xl mb-2">⏳</div>
@@ -116,16 +189,39 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <WordList
-                words={displayWords}
-                highlightedWord={highlightedWord}
-                onWordDeleted={reload}
-              />
+              <>
+                {/* 当前页生词 Tab */}
+                {activeTab === 'current-page' && (
+                  <div className="p-4">
+                    <WordList
+                      words={displayWords}
+                      highlightedWord={highlightedWord}
+                      onWordDeleted={handleWordDeleted}
+                    />
+                  </div>
+                )}
+
+                {/* 词库管理 Tab */}
+                {activeTab === 'vocabulary' && (
+                  <>
+                    {currentView === 'list' && (
+                      <VocabularyManagement words={words} onWordClick={handleWordClick} />
+                    )}
+                    {currentView === 'detail' && selectedWordData && (
+                      <WordDetail
+                        word={selectedWordData}
+                        onBack={handleBackToList}
+                        onDeleted={handleWordDeleted}
+                      />
+                    )}
+                  </>
+                )}
+              </>
             )}
           </main>
 
-          {/* Footer Stats */}
-          {!loading && displayWords.length > 0 && (
+          {/* Footer Stats - 只在当前页Tab显示 */}
+          {!loading && activeTab === 'current-page' && displayWords.length > 0 && (
             <footer className="bg-white border-t border-gray-200 px-4 py-2 flex-shrink-0">
               <div className="flex justify-between text-xs text-gray-500">
                 <span>

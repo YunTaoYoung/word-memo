@@ -17,10 +17,16 @@ export default function WordList({
 }: WordListProps) {
   const [focusedWord, setFocusedWord] = useState<string | null>(null);
 
-  // 当有高亮的单词时,自动聚焦该单词
+  // 当有高亮的单词时，分步处理聚焦动画
   useEffect(() => {
     if (highlightedWord) {
-      setFocusedWord(highlightedWord);
+      // 步骤 1: 先收缩所有卡片
+      setFocusedWord(null);
+
+      // 步骤 2: 等待收缩动画完成后再展开目标卡片
+      setTimeout(() => {
+        setFocusedWord(highlightedWord);
+      }, 150); // 给收缩动画一些时间
     }
   }, [highlightedWord]);
 
