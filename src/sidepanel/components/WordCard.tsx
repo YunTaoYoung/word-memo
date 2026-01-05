@@ -13,6 +13,7 @@ interface WordCardProps {
   focused?: boolean; // 是否聚焦(展开)
   onDeleted?: () => void;
   onFocus?: () => void; // 聚焦回调
+  onCollapse?: () => void; // 折叠回调
 }
 
 export default function WordCard({
@@ -21,6 +22,7 @@ export default function WordCard({
   focused = false,
   onDeleted,
   onFocus,
+  onCollapse,
 }: WordCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,28 @@ export default function WordCard({
     speechSynthesis.speak(utterance);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // 如果点击的是按钮，不处理卡片点击
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+
+    // 移除整个卡片的点击处理逻辑
+    // 现在只有折叠标志可以触发展开/折叠
+  };
+
+  const handleToggleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 防止事件冒泡
+
+    // 如果已经聚焦(展开)，则折叠
+    if (focused) {
+      onCollapse?.();
+    } else {
+      // 否则展开
+      onFocus?.();
+    }
+  };
+
   return (
     <div
       ref={cardRef}
@@ -99,16 +123,26 @@ export default function WordCard({
         ${highlighted ? 'ring-4 ring-blue-500 animate-pulse' : ''}
         ${focused ? 'ring-2 ring-blue-400' : ''}
         ${isDeleting ? 'opacity-50' : ''}
-        mb-3 transition-all duration-300 cursor-pointer
+        mb-3 transition-all duration-300
       `}
       style={{ borderColor: levelColor }}
-      onClick={() => onFocus?.()}
+      onClick={handleCardClick}
     >
       {/* Header */}
       <div className="flex justify-between items-start mb-2">
-        <div className="flex-1">
-          <h3 className="text-lg font-bold text-gray-800">{word.word}</h3>
-          <p className="text-sm text-gray-500">{word.phonetic}</p>
+        <div className="flex items-center gap-2 flex-1">
+          {/* 折叠/展开标志 - 可点击区域 */}
+          <span
+            onClick={handleToggleClick}
+            className="text-gray-400 select-none cursor-pointer hover:text-gray-600 transition-colors p-1 -m-1"
+            title={focused ? '折叠' : '展开'}
+          >
+            {focused ? '▼' : '▶'}
+          </span>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-gray-800">{word.word}</h3>
+            <p className="text-sm text-gray-500">{word.phonetic}</p>
+          </div>
         </div>
         <div className="flex gap-2">
           <span

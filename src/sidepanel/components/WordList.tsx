@@ -6,7 +6,7 @@ import type { WordData } from '@/types';
 
 interface WordListProps {
   words: WordData[];
-  highlightedWord?: string | null;
+  highlightedWord?: { word: string; timestamp: number } | null;
   onWordDeleted: () => void;
 }
 
@@ -20,15 +20,26 @@ export default function WordList({
   // 当有高亮的单词时，分步处理聚焦动画
   useEffect(() => {
     if (highlightedWord) {
-      // 步骤 1: 先收缩所有卡片
-      setFocusedWord(null);
+      const word = highlightedWord.word;
 
-      // 步骤 2: 等待收缩动画完成后再展开目标卡片
-      setTimeout(() => {
-        setFocusedWord(highlightedWord);
-      }, 150); // 给收缩动画一些时间
+      // 使用函数式更新来获取最新的 focusedWord，避免依赖循环
+      setFocusedWord((currentFocusedWord) => {
+        // 如果点击的是当前已聚焦的单词，则折叠它
+        if (currentFocusedWord === word) {
+          return null;
+        } else if (currentFocusedWord === null) {
+          // 如果当前没有聚焦的卡片，直接展开（无延迟）
+          return word;
+        } else {
+          // 如果正在切换到另一个卡片，先收缩当前卡片
+          setTimeout(() => {
+            setFocusedWord(word);
+          }, 150);
+          return null; // 立即折叠当前卡片
+        }
+      });
     }
-  }, [highlightedWord]);
+  }, [highlightedWord]); // 只依赖 highlightedWord
 
   if (words.length === 0) {
     return (
@@ -47,10 +58,11 @@ export default function WordList({
         <WordCard
           key={word.word}
           word={word}
-          highlighted={word.word === highlightedWord}
+          highlighted={word.word === highlightedWord?.word}
           focused={word.word === focusedWord}
           onDeleted={onWordDeleted}
           onFocus={() => setFocusedWord(word.word)}
+          onCollapse={() => setFocusedWord(null)}
         />
       ))}
     </div>

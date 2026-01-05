@@ -20,6 +20,7 @@ import { showToast, updateToast } from './toast';
 
 let vocabulary: Set<string> = new Set();
 let visibleWords: Set<string> = new Set();
+let visibleWordCounters: Map<string, number> = new Map(); // 单词可见性计数器
 let highlightedElements: HTMLElement[] = [];
 let intersectionObserver: IntersectionObserver | null = null;
 let currentUrl = window.location.href;
@@ -152,6 +153,7 @@ function clearHighlights() {
   });
   highlightedElements = [];
   visibleWords.clear();
+  visibleWordCounters.clear(); // 清理计数器
 
   // 清理 IntersectionObserver
   if (intersectionObserver) {
@@ -208,20 +210,24 @@ function highlightWords(
 
   // 处理每个文本节点
   grouped.forEach((nodeMatches, textNode) => {
-    // 从后往前替换（避免偏移量变化）
-    nodeMatches.sort((a, b) => b.offset - a.offset);
+    // 按偏移量从小到大排序（从前往后处理）
+    nodeMatches.sort((a, b) => a.offset - b.offset);
+
+    const text = textNode.textContent || '';
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
 
     nodeMatches.forEach((match) => {
-      const text = textNode.textContent || '';
-      const before = text.substring(0, match.offset);
-      const matchText = text.substring(match.offset, match.offset + match.length);
-      const after = text.substring(match.offset + match.length);
+      // 添加匹配前的文本
+      if (match.offset > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.offset)));
+      }
 
       // 创建高亮元素
       const span = document.createElement('span');
       span.className = 'word-memo-highlight';
       span.dataset.word = match.word;
-      span.textContent = matchText;
+      span.textContent = text.substring(match.offset, match.offset + match.length);
       span.style.textDecoration = 'underline wavy #EF4444';
       span.style.textUnderlineOffset = '2px';
       span.style.cursor = 'pointer';
@@ -229,25 +235,27 @@ function highlightWords(
       // 保存到数组
       highlightedElements.push(span);
 
-      // 点击事件
-      span.addEventListener('click', (e) => {
-        e.preventDefault();
+      // 点击事件 - 不阻止事件传播，允许父元素处理
+      span.addEventListener('click', () => {
         chrome.runtime.sendMessage({
           type: 'SCROLL_TO_CARD',
           payload: { word: match.word },
         });
       });
 
-      // 替换文本节点
-      const fragment = document.createDocumentFragment();
-      fragment.appendChild(document.createTextNode(before));
       fragment.appendChild(span);
 
-      const afterNode = document.createTextNode(after);
-      fragment.appendChild(afterNode);
-
-      textNode.parentNode?.replaceChild(fragment, textNode);
+      // 更新索引
+      lastIndex = match.offset + match.length;
     });
+
+    // 添加剩余的文本
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+    }
+
+    // 一次性替换整个文本节点
+    textNode.parentNode?.replaceChild(fragment, textNode);
   });
 
   // 设置 IntersectionObserver 监听可见性
@@ -255,6 +263,14 @@ function highlightWords(
 }
 
 // 设置视口可见性检测
+/**
+ * 设置 IntersectionObserver 来跟踪高亮单词元素的可见性
+ * 使用计数器机制：每个单词进入视口时计数+1，离开时-1
+ * 只要计数>0就认为单词在视口中可见
+ * 当可见单词集合发生变化时通知侧边栏
+ * @param {IntersectionObserver} [intersectionObserver] - 可选的现有观察器实例，如果存在会被先断开
+ * @returns {void}
+ */
 function setupIntersectionObserver() {
   if (intersectionObserver) {
     intersectionObserver.disconnect();
@@ -269,14 +285,30 @@ function setupIntersectionObserver() {
         if (!word) return;
 
         if (entry.isIntersecting) {
+          // 进入视口：计数器+1
+          const currentCount = visibleWordCounters.get(word) || 0;
+          visibleWordCounters.set(word, currentCount + 1);
+
+          // 如果之前不可见，现在变为可见
           if (!visibleWords.has(word)) {
             visibleWords.add(word);
             changed = true;
           }
         } else {
-          if (visibleWords.has(word)) {
-            visibleWords.delete(word);
-            changed = true;
+          // 离开视口：计数器-1
+          const currentCount = visibleWordCounters.get(word) || 0;
+          const newCount = Math.max(0, currentCount - 1);
+
+          if (newCount === 0) {
+            // 计数归零，从可见集合中移除
+            visibleWordCounters.delete(word);
+            if (visibleWords.has(word)) {
+              visibleWords.delete(word);
+              changed = true;
+            }
+          } else {
+            // 计数未归零，更新计数器但保持在可见集合中
+            visibleWordCounters.set(word, newCount);
           }
         }
       });
@@ -301,8 +333,9 @@ function setupIntersectionObserver() {
 
 // 更新可见单词列表
 function updateVisibleWords() {
-  // 重新检查所有元素的可见性
+  // 重新检查所有元素的可见性并重建计数器
   visibleWords.clear();
+  visibleWordCounters.clear();
 
   highlightedElements.forEach((el) => {
     const rect = el.getBoundingClientRect();
@@ -313,7 +346,12 @@ function updateVisibleWords() {
       rect.right > 0;
 
     if (isVisible && el.dataset.word) {
-      visibleWords.add(el.dataset.word);
+      const word = el.dataset.word;
+      // 更新计数器
+      const currentCount = visibleWordCounters.get(word) || 0;
+      visibleWordCounters.set(word, currentCount + 1);
+      // 添加到可见集合
+      visibleWords.add(word);
     }
   });
 

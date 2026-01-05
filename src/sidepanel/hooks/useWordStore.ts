@@ -12,7 +12,7 @@ export function useWordStore() {
   const [visibleWords, setVisibleWords] = useState<string[]>([]);
   const [hasReceivedVisibleWords, setHasReceivedVisibleWords] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [highlightedWord, setHighlightedWord] = useState<string | null>(null);
+  const [highlightedWord, setHighlightedWord] = useState<{ word: string; timestamp: number } | null>(null);
 
   // 加载词库
   const loadVocabulary = async () => {
@@ -49,7 +49,7 @@ export function useWordStore() {
       } else if (message.type === 'SCROLL_TO_CARD') {
         const word = message.payload?.word;
         if (word) {
-          setHighlightedWord(word);
+          setHighlightedWord({ word, timestamp: Date.now() });
           // 3秒后取消高亮
           setTimeout(() => setHighlightedWord(null), 3000);
         }
