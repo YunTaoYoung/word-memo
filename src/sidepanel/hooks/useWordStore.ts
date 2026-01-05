@@ -9,6 +9,8 @@ import { getVocabulary } from '@/lib/storage';
  */
 export function useWordStore() {
   const [words, setWords] = useState<WordData[]>([]);
+  const [visibleWords, setVisibleWords] = useState<string[]>([]);
+  const [hasReceivedVisibleWords, setHasReceivedVisibleWords] = useState(false);
   const [loading, setLoading] = useState(true);
   const [highlightedWord, setHighlightedWord] = useState<string | null>(null);
 
@@ -51,6 +53,11 @@ export function useWordStore() {
           // 3秒后取消高亮
           setTimeout(() => setHighlightedWord(null), 3000);
         }
+      } else if (message.type === 'VISIBLE_WORDS_UPDATED') {
+        const words = message.payload?.words || [];
+        console.log('[Side Panel] Visible words updated:', words.length);
+        setVisibleWords(words);
+        setHasReceivedVisibleWords(true);
       }
     };
 
@@ -63,6 +70,8 @@ export function useWordStore() {
 
   return {
     words,
+    visibleWords,
+    hasReceivedVisibleWords,
     loading,
     highlightedWord,
     reload: loadVocabulary,

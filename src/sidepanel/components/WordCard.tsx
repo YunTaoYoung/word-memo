@@ -1,6 +1,6 @@
 // src/sidepanel/components/WordCard.tsx
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { WordData } from '@/types';
 import { MemoryLevel } from '@/types';
 import { handleRemembered, handleNotRemembered } from '@/lib/memory-algorithm';
@@ -10,18 +10,30 @@ import { MEMORY_COLORS } from '@/lib/constants';
 interface WordCardProps {
   word: WordData;
   highlighted?: boolean;
+  focused?: boolean; // 是否聚焦(展开)
   onDeleted?: () => void;
+  onFocus?: () => void; // 聚焦回调
 }
 
 export default function WordCard({
   word,
   highlighted = false,
+  focused = false,
   onDeleted,
+  onFocus,
 }: WordCardProps) {
-  const [expanded, setExpanded] = useState(
-    word.memoryState.level === MemoryLevel.NEW
-  );
   const [isDeleting, setIsDeleting] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // 当高亮时滚动到视图中
+  useEffect(() => {
+    if (highlighted && cardRef.current) {
+      cardRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start', // 确保卡片头部在视口顶部,完整可见
+      });
+    }
+  }, [highlighted]);
 
   const levelColor = MEMORY_COLORS[word.memoryState.level];
 
@@ -65,20 +77,17 @@ export default function WordCard({
 
   return (
     <div
+      ref={cardRef}
       className={`
         word-card
         word-card-level-${word.memoryState.level}
         ${highlighted ? 'ring-4 ring-blue-500 animate-pulse' : ''}
+        ${focused ? 'ring-2 ring-blue-400' : ''}
         ${isDeleting ? 'opacity-50' : ''}
-        mb-3 transition-all duration-300
+        mb-3 transition-all duration-300 cursor-pointer
       `}
       style={{ borderColor: levelColor }}
-      onMouseEnter={() => setExpanded(true)}
-      onMouseLeave={() => {
-        if (word.memoryState.level !== MemoryLevel.NEW) {
-          setExpanded(false);
-        }
-      }}
+      onClick={() => onFocus?.()}
     >
       {/* Header */}
       <div className="flex justify-between items-start mb-2">
@@ -121,8 +130,8 @@ export default function WordCard({
         ))}
       </div>
 
-      {/* Examples (展开时显示) */}
-      {expanded && word.examples.length > 0 && (
+      {/* Examples (聚焦时显示) */}
+      {focused && word.examples.length > 0 && (
         <div className="mt-3 pt-3 border-t border-gray-200">
           <p className="text-xs font-semibold text-gray-600 mb-2">例句：</p>
           {word.examples.map((ex, i) => (
@@ -134,8 +143,8 @@ export default function WordCard({
         </div>
       )}
 
-      {/* Etymology (展开时显示) */}
-      {expanded && word.etymology && (
+      {/* Etymology (聚焦时显示) */}
+      {focused && word.etymology && (
         <div className="mt-2 pt-2 border-t border-gray-200">
           <p className="text-xs">
             <span className="font-semibold text-gray-600">词根：</span>
@@ -144,24 +153,26 @@ export default function WordCard({
         </div>
       )}
 
-      {/* Memory Feedback */}
-      <div className="mt-3 pt-3 border-t border-gray-200">
-        <p className="text-sm text-gray-600 mb-2">❓ 是否记住了这个单词？</p>
-        <div className="flex gap-2">
-          <button
-            onClick={handleRememberClick}
-            className="flex-1 px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors"
-          >
-            记住了 ✓
-          </button>
-          <button
-            onClick={handleNotRememberClick}
-            className="flex-1 px-3 py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
-          >
-            还不熟 ×
-          </button>
+      {/* Memory Feedback (聚焦时显示) */}
+      {focused && (
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <p className="text-sm text-gray-600 mb-2">❓ 是否记住了这个单词？</p>
+          <div className="flex gap-2">
+            <button
+              onClick={handleRememberClick}
+              className="flex-1 px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors"
+            >
+              记住了 ✓
+            </button>
+            <button
+              onClick={handleNotRememberClick}
+              className="flex-1 px-3 py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
+            >
+              还不熟 ×
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

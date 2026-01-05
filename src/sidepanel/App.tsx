@@ -12,7 +12,7 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [reviewQueue, setReviewQueue] = useState<string[]>([]);
 
-  const { words, loading, highlightedWord, reload } = useWordStore();
+  const { words, visibleWords, hasReceivedVisibleWords, loading, highlightedWord, reload } = useWordStore();
   const { settings } = useSettings();
 
   // 检查待复习单词
@@ -28,6 +28,13 @@ export default function App() {
 
   // 检查是否已配置API Key
   const hasApiKey = settings?.llm.apiKey && settings.llm.apiKey.length > 0;
+
+  // 过滤可见单词
+  // 只有在接收到可见单词数据后才进行过滤,否则显示全部词库
+  // 这样可以避免在滚动时短暂显示全部或空列表
+  const displayWords = hasReceivedVisibleWords
+    ? words.filter((word) => visibleWords.includes(word.word))
+    : words;
 
   return (
     <div className="h-screen bg-gray-50 flex flex-col">
@@ -110,7 +117,7 @@ export default function App() {
               </div>
             ) : (
               <WordList
-                words={words}
+                words={displayWords}
                 highlightedWord={highlightedWord}
                 onWordDeleted={reload}
               />
@@ -118,10 +125,12 @@ export default function App() {
           </main>
 
           {/* Footer Stats */}
-          {!loading && words.length > 0 && (
+          {!loading && displayWords.length > 0 && (
             <footer className="bg-white border-t border-gray-200 px-4 py-2 flex-shrink-0">
               <div className="flex justify-between text-xs text-gray-500">
-                <span>词库: {words.length} 个单词</span>
+                <span>
+                  显示: {displayWords.length} / 词库: {words.length}
+                </span>
                 <button
                   onClick={reload}
                   className="hover:text-blue-500 hover:underline"

@@ -4,6 +4,9 @@ import { MemoryLevel } from '@/types';
 import { saveWord, getWordFromVocabulary } from '@/lib/storage';
 import { generateWordExplanation } from './llm-client';
 
+// 防重复：正在处理的单词集合
+const pendingWords: Set<string> = new Set();
+
 /**
  * 右键菜单点击处理
  */
@@ -24,6 +27,12 @@ export async function handleContextMenu(
     return;
   }
 
+  // 防重复：检查是否正在处理中
+  if (pendingWords.has(word)) {
+    console.log('[Word Memo] Word is already being added:', word);
+    return;
+  }
+
   try {
     // 检查是否已存在
     const existing = await getWordFromVocabulary(word);
@@ -34,6 +43,9 @@ export async function handleContextMenu(
       });
       return;
     }
+
+    // 标记为处理中
+    pendingWords.add(word);
 
     // 通知Content Script显示loading
     chrome.tabs.sendMessage(tab.id, {
@@ -85,5 +97,8 @@ export async function handleContextMenu(
         error: error.message || '未知错误',
       },
     });
+  } finally {
+    // 无论成功或失败，都从处理集合中移除
+    pendingWords.delete(word);
   }
 }
