@@ -3,7 +3,7 @@
 import type { Message } from '@/types/messages';
 import { generatePracticeQuestion } from './llm-client';
 import { selectWordsForPractice } from '@/lib/memory-algorithm';
-import { getVocabulary } from '@/lib/storage';
+import { getVocabulary, savePracticeQuestion, getPracticeQuestionsForWord } from '@/lib/storage';
 
 /**
  * 消息处理路由
@@ -48,9 +48,11 @@ export function handleMessage(
       break;
 
     case 'GENERATE_PRACTICE_QUESTION':
-      // 生成练习题目
+      // 生成练习题目并保存到缓存
       handleGeneratePracticeQuestion(message.payload)
-        .then((question) => {
+        .then(async (question) => {
+          // 保存到缓存
+          await savePracticeQuestion(question.word, question);
           sendResponse({ question });
         })
         .catch((error) => {
@@ -63,6 +65,17 @@ export function handleMessage(
       handleSelectPracticeWords()
         .then((words) => {
           sendResponse({ words });
+        })
+        .catch((error) => {
+          sendResponse({ error: error.message });
+        });
+      return true; // 异步响应
+
+    case 'GET_PRACTICE_CACHE':
+      // 获取单词的练习题缓存
+      handleGetPracticeCache(message.payload.word)
+        .then((questions) => {
+          sendResponse({ questions });
         })
         .catch((error) => {
           sendResponse({ error: error.message });
@@ -100,4 +113,11 @@ async function handleSelectPracticeWords() {
   const wordsArray = Array.from(vocabulary.values());
   const words = selectWordsForPractice(wordsArray);
   return words;
+}
+
+/**
+ * 获取单词的练习题缓存
+ */
+async function handleGetPracticeCache(word: string) {
+  return await getPracticeQuestionsForWord(word);
 }

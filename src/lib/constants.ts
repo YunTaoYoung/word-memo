@@ -9,6 +9,7 @@ export const STORAGE_KEYS = {
   VOCABULARY: 'vocabulary',
   SETTINGS: 'settings',
   SIDEBAR_WIDTH: 'sidebarWidth',
+  PRACTICE_CACHE: 'practiceCache',
 } as const;
 
 // 右键菜单ID

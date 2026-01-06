@@ -1,10 +1,11 @@
 // src/sidepanel/components/VocabularyManagement.tsx
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import type { WordData } from '@/types';
 import { MemoryLevel } from '@/types';
 import { MEMORY_COLORS } from '@/lib/constants';
-import { isWordExpired } from '@/lib/memory-algorithm';
+import { isWordExpired, calculateNextReview } from '@/lib/memory-algorithm';
+import { saveWord } from '@/lib/storage';
 
 interface VocabularyManagementProps {
   words: WordData[];
@@ -31,6 +32,93 @@ export default function VocabularyManagement({ words, onWordClick, onPracticeCli
     [MemoryLevel.LEARNING]: '学习中',
     [MemoryLevel.MASTERED]: '已掌握',
     [MemoryLevel.ARCHIVED]: '已归档',
+  };
+
+  // 状态变更时重新计算复习时间
+  const handleLevelChange = async (word: WordData, newLevel: MemoryLevel, onClose: () => void) => {
+    console.log('Changing level for', word.word, 'to', newLevel);
+    const updatedWord = { ...word };
+    updatedWord.memoryState.level = newLevel;
+    updatedWord.memoryState.nextReviewDate = calculateNextReview(newLevel, true);
+    updatedWord.memoryState.lastReviewDate = new Date();
+    updatedWord.updatedDate = new Date();
+
+    await saveWord(updatedWord);
+    onClose();
+  };
+
+  // 状态选择下拉菜单组件
+  const LevelDropdown = ({ word }: { word: WordData }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // 点击外部关闭下拉菜单
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const levelColor = MEMORY_COLORS[word.memoryState.level];
+
+    return (
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(!isOpen);
+          }}
+          className="badge cursor-pointer hover:shadow-md transition-all duration-200"
+          style={{
+            backgroundColor: levelColor + '15',
+            color: levelColor,
+            border: `1px solid ${levelColor}30`
+          }}
+        >
+          {levelNames[word.memoryState.level]}
+          <svg className="w-3 h-3 ml-0.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        {isOpen && (
+          <div className="absolute top-full right-0 mt-1 py-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 min-w-28">
+            {Object.entries(levelNames).map(([key, value]) => {
+              const levelNum = Number(key) as MemoryLevel;
+              const itemColor = MEMORY_COLORS[levelNum];
+              return (
+                <button
+                  key={key}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLevelChange(word, levelNum as MemoryLevel, () => setIsOpen(false));
+                  }}
+                  className={`w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 transition-colors flex items-center gap-2 ${
+                    levelNum === word.memoryState.level ? 'bg-primary-50' : ''
+                  }`}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: itemColor }}
+                  />
+                  <span style={{ color: levelNum === word.memoryState.level ? itemColor : undefined }}>
+                    {value}
+                  </span>
+                  {levelNum === word.memoryState.level && (
+                    <svg className="w-3 h-3 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
   };
 
   // 过滤和排序单词
@@ -184,17 +272,8 @@ export default function VocabularyManagement({ words, onWordClick, onPracticeCli
                     <p className="text-sm text-gray-500 mt-0.5">{word.phonetic}</p>
                   </div>
 
-                  {/* 掌握程度标签 */}
-                  <span
-                    className="badge flex-shrink-0 ml-3"
-                    style={{
-                      backgroundColor: MEMORY_COLORS[word.memoryState.level] + '15',
-                      color: MEMORY_COLORS[word.memoryState.level],
-                      border: `1px solid ${MEMORY_COLORS[word.memoryState.level]}30`
-                    }}
-                  >
-                    {levelNames[word.memoryState.level]}
-                  </span>
+                  {/* 掌握程度下拉菜单 */}
+                  <LevelDropdown word={word} />
                 </div>
 
                 {/* 释义预览 */}

@@ -1,5 +1,7 @@
 // src/types/storage.ts
 
+import type { PracticeQuestion } from './index';
+
 /**
  * 存储键定义
  */
@@ -7,6 +9,7 @@ export enum StorageKey {
   VOCABULARY = 'vocabulary',
   SETTINGS = 'settings',
   SIDEBAR_WIDTH = 'sidebarWidth',
+  PRACTICE_CACHE = 'practiceCache',
 }
 
 /**
@@ -25,6 +28,7 @@ export interface WordDataSerialized {
   definitions: Array<{ pos: string; meaning: string }>;
   examples: Array<{ en: string; zh: string }>;
   etymology: string;
+  remarks: string;
   memoryState: {
     level: number;
     reviewCount: number;
@@ -36,4 +40,11 @@ export interface WordDataSerialized {
   addedDate: string;
   updatedDate: string;
   source?: string;
+}
+
+/**
+ * 练习题缓存存储格式
+ */
+export interface PracticeCacheStorage {
+  [word: string]: PracticeQuestion[];
 }

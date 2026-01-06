@@ -67,6 +67,7 @@ export async function handleContextMenu(
       definitions: explanation.definitions,
       examples: explanation.examples,
       etymology: explanation.etymology,
+      remarks: '',
       memoryState: {
         level: MemoryLevel.NEW,
         reviewCount: 0,

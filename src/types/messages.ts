@@ -15,7 +15,11 @@ export type MessageType =
   | 'UPDATE_WORD_STYLE'
   | 'OPEN_SIDEPANEL'
   | 'GENERATE_PRACTICE_QUESTION'
-  | 'SELECT_PRACTICE_WORDS';
+  | 'SELECT_PRACTICE_WORDS'
+  | 'GET_PRACTICE_CACHE'
+  | 'SAVE_PRACTICE_QUESTION'
+  | 'UPDATE_WORD_DATA'
+  | 'GET_WORD_DATA';
 
 export interface Message<T = any> {
   type: MessageType;

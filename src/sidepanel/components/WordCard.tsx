@@ -3,14 +3,16 @@
 import { useState, useEffect, useRef } from 'react';
 import type { WordData } from '@/types';
 import { MemoryLevel } from '@/types';
-import { deleteWord } from '@/lib/storage';
+import { deleteWord, saveWord } from '@/lib/storage';
 import { MEMORY_COLORS } from '@/lib/constants';
+import { calculateNextReview } from '@/lib/memory-algorithm';
 
 interface WordCardProps {
   word: WordData;
   highlighted?: boolean;
   focused?: boolean; // 是否聚焦(展开)
   onDeleted?: () => void;
+  onUpdated?: () => void; // 更新回调
   onFocus?: () => void; // 聚焦回调
   onCollapse?: () => void; // 折叠回调
 }
@@ -20,11 +22,25 @@ export default function WordCard({
   highlighted = false,
   focused = false,
   onDeleted,
+  onUpdated,
   onFocus,
   onCollapse,
 }: WordCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showLevelDropdown, setShowLevelDropdown] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowLevelDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // 当高亮时滚动到视图中（收缩状态）
   useEffect(() => {
@@ -77,6 +93,20 @@ export default function WordCard({
     }
   };
 
+  // 状态变更时重新计算复习时间
+  const handleLevelChange = async (newLevel: MemoryLevel) => {
+    const updatedWord = { ...word };
+    updatedWord.memoryState.level = newLevel;
+    updatedWord.memoryState.nextReviewDate = calculateNextReview(newLevel, true);
+    updatedWord.memoryState.lastReviewDate = new Date();
+    updatedWord.updatedDate = new Date();
+
+    await saveWord(updatedWord);
+    setShowLevelDropdown(false);
+    onUpdated?.();
+    chrome.runtime.sendMessage({ type: 'VOCABULARY_UPDATED' });
+  };
+
   const pronounce = () => {
     const utterance = new SpeechSynthesisUtterance(word.word);
     utterance.lang = 'en-US';
@@ -104,6 +134,62 @@ export default function WordCard({
       onFocus?.();
     }
   };
+
+  // 状态选择下拉菜单
+  const LevelDropdown = () => (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowLevelDropdown(!showLevelDropdown);
+        }}
+        className="badge cursor-pointer hover:shadow-md transition-all duration-200"
+        style={{
+          backgroundColor: levelColor + '15',
+          color: levelColor,
+          border: `1px solid ${levelColor}30`,
+        }}
+      >
+        {levelNames[word.memoryState.level]}
+        <svg className="w-3 h-3 ml-0.5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {showLevelDropdown && (
+        <div className="absolute top-full right-0 mt-1 py-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 min-w-28">
+          {Object.entries(levelNames).map(([key, value]) => {
+            const levelNum = Number(key) as MemoryLevel;
+            const itemColor = MEMORY_COLORS[levelNum];
+            return (
+              <button
+                key={key}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLevelChange(levelNum as MemoryLevel);
+                }}
+                className={`w-full px-3 py-1.5 text-left text-xs hover:bg-gray-100 transition-colors flex items-center gap-2 ${
+                  levelNum === word.memoryState.level ? 'bg-primary-50' : ''
+                }`}
+              >
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: itemColor }}
+                />
+                <span style={{ color: levelNum === word.memoryState.level ? itemColor : undefined }}>
+                  {value}
+                </span>
+                {levelNum === word.memoryState.level && (
+                  <svg className="w-3 h-3 ml-auto" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div
@@ -159,17 +245,8 @@ export default function WordCard({
         </div>
 
         <div className="flex flex-col items-end gap-1 ml-3 flex-shrink-0">
-          {/* 状态标记 - 上一行 */}
-          <span
-            className="badge"
-            style={{
-              backgroundColor: levelColor + '15',
-              color: levelColor,
-              border: `1px solid ${levelColor}30`
-            }}
-          >
-            {levelNames[word.memoryState.level]}
-          </span>
+          {/* 状态按钮 - 可点击带下拉菜单 */}
+          <LevelDropdown />
           {/* 播放读音和删除按钮 - 下一行，右对齐 */}
           <div className="flex items-center gap-1.5 justify-end">
             <button

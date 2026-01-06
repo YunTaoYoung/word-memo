@@ -1,7 +1,7 @@
 // src/lib/storage.ts
 
-import type { WordData, UserSettings } from '@/types';
-import type { VocabularyStorage } from '@/types/storage';
+import type { WordData, UserSettings, PracticeQuestion } from '@/types';
+import type { VocabularyStorage, PracticeCacheStorage } from '@/types/storage';
 import { STORAGE_KEYS } from './constants';
 
 /**
@@ -153,4 +153,68 @@ export async function getReviewQueue(): Promise<string[]> {
     .map((word) => word.word);
 
   return dueWords;
+}
+
+// ==================== 练习题缓存 ====================
+
+/**
+ * 获取练习题缓存
+ */
+export async function getPracticeCache(): Promise<Map<string, PracticeQuestion[]>> {
+  const result = await chrome.storage.local.get(STORAGE_KEYS.PRACTICE_CACHE);
+  const data: PracticeCacheStorage = result[STORAGE_KEYS.PRACTICE_CACHE] || {};
+
+  const cache = new Map<string, PracticeQuestion[]>();
+  for (const [word, questions] of Object.entries(data)) {
+    cache.set(word, questions);
+  }
+
+  return cache;
+}
+
+/**
+ * 保存练习题缓存
+ */
+export async function savePracticeQuestion(
+  word: string,
+  question: PracticeQuestion
+): Promise<void> {
+  const cache = await getPracticeCache();
+  const existing = cache.get(word) || [];
+
+  // 避免重复添加相同题目
+  if (!existing.some((q) => q.id === question.id)) {
+    existing.push(question);
+    // 每个单词最多保留10道题目
+    if (existing.length > 10) {
+      existing.shift();
+    }
+    cache.set(word, existing);
+  }
+
+  const serialized: PracticeCacheStorage = {};
+  for (const [w, qs] of cache.entries()) {
+    serialized[w] = qs;
+  }
+
+  await chrome.storage.local.set({
+    [STORAGE_KEYS.PRACTICE_CACHE]: serialized,
+  });
+}
+
+/**
+ * 获取单词的练习题缓存
+ */
+export async function getPracticeQuestionsForWord(
+  word: string
+): Promise<PracticeQuestion[]> {
+  const cache = await getPracticeCache();
+  return cache.get(word) || [];
+}
+
+/**
+ * 清除练习题缓存
+ */
+export async function clearPracticeCache(): Promise<void> {
+  await chrome.storage.local.remove(STORAGE_KEYS.PRACTICE_CACHE);
 }

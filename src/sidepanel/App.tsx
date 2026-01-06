@@ -239,6 +239,7 @@ export default function App() {
                         word={selectedWordData}
                         onBack={handleBackToList}
                         onDeleted={handleWordDeleted}
+                        onUpdated={reload}
                       />
                     )}
                     {currentView === 'practice' && (

@@ -51,6 +51,7 @@ export interface WordData {
   definitions: Definition[];     // 词性和释义
   examples: Example[];           // 例句
   etymology: string;             // 词根词缀
+  remarks: string;               // 个人备注
 
   // 记忆状态
   memoryState: WordMemoryState;
