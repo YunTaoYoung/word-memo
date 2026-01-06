@@ -21,23 +21,111 @@
 }
 
 @layer components {
+  /* Word Card - Modern Design */
   .word-card {
-    @apply bg-white rounded-lg shadow-sm border-2 p-4 mb-3 transition-all duration-300;
+    @apply bg-white rounded-2xl shadow-soft border-l-4 p-5 mb-4
+           transition-all duration-300 hover:shadow-soft-lg;
   }
 
   .word-card-level-0 {
-    @apply border-memory-new;
+    @apply border-memory-new bg-gradient-to-br from-white to-memory-new-light/20;
   }
 
   .word-card-level-1 {
-    @apply border-memory-familiar;
+    @apply border-memory-familiar bg-gradient-to-br from-white to-memory-familiar-light/20;
   }
 
   .word-card-level-2 {
-    @apply border-memory-learning;
+    @apply border-memory-learning bg-gradient-to-br from-white to-memory-learning-light/20;
   }
 
   .word-card-level-3 {
-    @apply border-memory-mastered;
+    @apply border-memory-mastered bg-gradient-to-br from-white to-memory-mastered-light/20;
+  }
+
+  /* Icon Button */
+  .icon-btn {
+    @apply p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200
+           transition-colors duration-200 text-gray-600 hover:text-gray-900;
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply px-4 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600
+           text-white rounded-xl font-medium shadow-soft
+           hover:from-primary-600 hover:to-primary-700 hover:shadow-soft-lg
+           active:scale-95 transition-all duration-200;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply px-4 py-2.5 bg-white text-gray-700 rounded-xl font-medium
+           border border-gray-300 shadow-soft
+           hover:bg-gray-50 hover:border-gray-400 hover:shadow-soft-lg
+           active:scale-95 transition-all duration-200;
+  }
+
+  /* Success Button */
+  .btn-success {
+    @apply px-4 py-2.5 bg-gradient-to-r from-memory-mastered to-memory-mastered-dark
+           text-white rounded-xl font-medium shadow-soft
+           hover:from-memory-mastered-dark hover:to-memory-mastered
+           hover:shadow-soft-lg active:scale-95 transition-all duration-200;
+  }
+
+  /* Warning Button */
+  .btn-warning {
+    @apply px-4 py-2.5 bg-gradient-to-r from-memory-familiar to-memory-familiar-dark
+           text-white rounded-xl font-medium shadow-soft
+           hover:from-memory-familiar-dark hover:to-memory-familiar
+           hover:shadow-soft-lg active:scale-95 transition-all duration-200;
+  }
+
+  /* Input Field */
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-white border border-gray-300 rounded-xl
+           text-gray-900 placeholder-gray-400
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           transition-all duration-200 shadow-inner-soft;
+  }
+
+  /* Badge */
+  .badge {
+    @apply px-3 py-1 text-xs font-medium rounded-full;
+  }
+
+  /* Section Card */
+  .section-card {
+    @apply bg-white rounded-2xl shadow-soft-lg p-6 border border-gray-100;
+  }
+
+  /* Tab Button */
+  .tab-btn {
+    @apply flex-1 px-4 py-3 text-sm font-semibold transition-all duration-200 relative;
+  }
+
+  .tab-btn-active {
+    @apply text-primary-600 bg-primary-50;
+  }
+
+  .tab-btn-active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600;
+  }
+
+  .tab-btn-inactive {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-50;
+  }
+}
+
+@layer utilities {
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-sm;
   }
 }

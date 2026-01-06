@@ -120,109 +120,153 @@ export default function WordCard({
       className={`
         word-card
         word-card-level-${word.memoryState.level}
-        ${highlighted ? 'ring-4 ring-blue-500 animate-pulse' : ''}
-        ${focused ? 'ring-2 ring-blue-400' : ''}
-        ${isDeleting ? 'opacity-50' : ''}
-        mb-3 transition-all duration-300
+        ${highlighted ? 'ring-4 ring-primary-400 shadow-soft-xl scale-[1.02]' : ''}
+        ${focused ? 'ring-2 ring-primary-300 shadow-soft-lg' : ''}
+        ${isDeleting ? 'opacity-50 pointer-events-none' : ''}
+        transition-smooth
       `}
       style={{ borderColor: levelColor }}
       onClick={handleCardClick}
     >
       {/* Header */}
-      <div className="flex justify-between items-start mb-2">
-        <div className="flex items-center gap-2 flex-1">
-          {/* 折叠/展开标志 - 可点击区域 */}
-          <span
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          {/* 折叠/展开标志 */}
+          <button
             onClick={handleToggleClick}
-            className="text-gray-400 select-none cursor-pointer hover:text-gray-600 transition-colors p-1 -m-1"
+            className="flex-shrink-0 w-6 h-6 flex items-center justify-center
+                       text-gray-400 hover:text-primary-600 hover:bg-primary-50
+                       rounded-lg transition-all duration-200"
             title={focused ? '折叠' : '展开'}
+            aria-label={focused ? '折叠' : '展开'}
           >
-            {focused ? '▼' : '▶'}
-          </span>
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-gray-800">{word.word}</h3>
-            <p className="text-sm text-gray-500">{word.phonetic}</p>
+            <svg
+              className={`w-4 h-4 transition-transform duration-200 ${focused ? 'rotate-90' : ''}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-bold text-gray-900 truncate">{word.word}</h3>
+            <p className="text-sm text-gray-500 mt-0.5">{word.phonetic}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-1.5 ml-3 flex-shrink-0">
           <span
-            className="px-2 py-1 text-xs rounded"
-            style={{ backgroundColor: levelColor + '20', color: levelColor }}
+            className="badge"
+            style={{
+              backgroundColor: levelColor + '15',
+              color: levelColor,
+              border: `1px solid ${levelColor}30`
+            }}
           >
             {levelNames[word.memoryState.level]}
           </span>
           <button
             onClick={pronounce}
-            className="p-1 hover:bg-gray-100 rounded"
+            className="icon-btn"
             title="朗读"
+            aria-label="朗读单词"
           >
-            🔊
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
           </button>
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-1 hover:bg-gray-100 rounded text-red-500"
+            className="icon-btn hover:text-red-600 hover:bg-red-50 disabled:opacity-50"
             title="删除"
+            aria-label="删除单词"
           >
-            🗑️
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
           </button>
         </div>
       </div>
 
       {/* Definitions */}
-      <div
-        className={`mb-2 text-sm text-gray-800 ${
-          !focused ? 'line-clamp-2' : ''
-        }`}
-      >
+      <div className={`text-sm leading-relaxed ${!focused ? 'line-clamp-2' : 'space-y-2'}`}>
         {word.definitions.map((def, i) => (
-          <span key={i} className={!focused ? 'inline' : 'block mb-1'}>
-            <span className="font-semibold text-gray-600">{def.pos}</span>{' '}
-            <span>{def.meaning}</span>
-            {!focused && i < word.definitions.length - 1 && <span className="mx-1">•</span>}
-          </span>
+          <div key={i} className={!focused ? 'inline' : 'flex gap-2'}>
+            <span className="font-semibold text-gray-700 flex-shrink-0">{def.pos}</span>
+            <span className="text-gray-800">{def.meaning}</span>
+            {!focused && i < word.definitions.length - 1 && <span className="mx-1.5 text-gray-400">•</span>}
+          </div>
         ))}
       </div>
 
       {/* Examples (聚焦时显示) */}
       {focused && word.examples.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <p className="text-xs font-semibold text-gray-600 mb-2">例句：</p>
-          {word.examples.map((ex, i) => (
-            <div key={i} className="mb-2">
-              <p className="text-sm italic text-gray-700">{ex.en}</p>
-              <p className="text-xs text-gray-500">{ex.zh}</p>
-            </div>
-          ))}
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="flex items-center gap-2 mb-3">
+            <svg className="w-4 h-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+            </svg>
+            <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">例句</span>
+          </div>
+          <div className="space-y-3">
+            {word.examples.map((ex, i) => (
+              <div key={i} className="pl-6 border-l-2 border-gray-200 hover:border-primary-300 transition-colors">
+                <p className="text-sm italic text-gray-700 leading-relaxed">{ex.en}</p>
+                <p className="text-xs text-gray-500 mt-1">{ex.zh}</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       {/* Etymology (聚焦时显示) */}
       {focused && word.etymology && (
-        <div className="mt-2 pt-2 border-t border-gray-200">
-          <p className="text-xs">
-            <span className="font-semibold text-gray-600">词根：</span>
-            <span className="text-gray-600">{word.etymology}</span>
-          </p>
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="flex items-start gap-2">
+            <svg className="w-4 h-4 text-primary-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <div className="flex-1">
+              <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">词根</span>
+              <p className="text-sm text-gray-700 mt-1 leading-relaxed">{word.etymology}</p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Memory Feedback (聚焦时显示) */}
       {focused && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <p className="text-sm text-gray-600 mb-2">❓ 是否记住了这个单词？</p>
-          <div className="flex gap-2">
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <p className="text-sm text-gray-600 mb-3 font-medium">是否记住了这个单词？</p>
+          <div className="grid grid-cols-2 gap-3">
             <button
               onClick={handleRememberClick}
-              className="flex-1 px-3 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors"
+              className="btn-success text-sm"
             >
-              记住了 ✓
+              <span className="flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                记住了
+              </span>
             </button>
             <button
               onClick={handleNotRememberClick}
-              className="flex-1 px-3 py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
+              className="btn-warning text-sm"
             >
-              还不熟 ×
+              <span className="flex items-center justify-center gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                还不熟
+              </span>
             </button>
           </div>
         </div>

@@ -67,97 +67,120 @@ export default function VocabularyManagement({ words, onWordClick }: VocabularyM
   return (
     <div className="h-full flex flex-col">
       {/* 搜索和过滤栏 */}
-      <div className="p-4 bg-white border-b border-gray-200 space-y-3">
+      <div className="p-5 glass border-b border-gray-200/80 space-y-3 flex-shrink-0">
         {/* 搜索框 */}
-        <input
-          type="text"
-          placeholder="搜索单词或释义..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-        />
+        <div className="relative">
+          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="搜索单词或释义..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl
+                       text-gray-900 placeholder-gray-400
+                       focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+                       transition-all duration-200 shadow-inner-soft"
+          />
+        </div>
 
         {/* 排序和过滤 */}
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {/* 排序选择 */}
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="input-field text-sm"
           >
-            <option value="alpha-asc">字母顺序 A-Z</option>
-            <option value="alpha-desc">字母顺序 Z-A</option>
-            <option value="level-asc">掌握程度 低→高</option>
-            <option value="level-desc">掌握程度 高→低</option>
+            <option value="alpha-asc">字母 A-Z</option>
+            <option value="alpha-desc">字母 Z-A</option>
+            <option value="level-asc">掌握 低→高</option>
+            <option value="level-desc">掌握 高→低</option>
           </select>
 
           {/* 词性过滤 */}
           <select
             value={posFilter}
             onChange={(e) => setPOSFilter(e.target.value as POSFilter)}
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="input-field text-sm"
           >
             <option value="all">全部词性</option>
-            <option value="n.">名词 (n.)</option>
-            <option value="v.">动词 (v.)</option>
-            <option value="adj.">形容词 (adj.)</option>
-            <option value="adv.">副词 (adv.)</option>
-            <option value="prep.">介词 (prep.)</option>
-            <option value="conj.">连词 (conj.)</option>
-            <option value="pron.">代词 (pron.)</option>
+            <option value="n.">名词</option>
+            <option value="v.">动词</option>
+            <option value="adj.">形容词</option>
+            <option value="adv.">副词</option>
+            <option value="prep.">介词</option>
+            <option value="conj.">连词</option>
+            <option value="pron.">代词</option>
           </select>
         </div>
 
         {/* 统计信息 */}
-        <div className="text-xs text-gray-500">
-          显示 {filteredAndSortedWords.length} / 总计 {words.length} 个单词
+        <div className="flex items-center gap-2 text-xs text-gray-600">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <span>
+            显示 <span className="font-semibold text-gray-800">{filteredAndSortedWords.length}</span> /
+            总计 <span className="font-semibold text-gray-800">{words.length}</span>
+          </span>
         </div>
       </div>
 
       {/* 单词列表 */}
       <div className="flex-1 overflow-auto">
         {filteredAndSortedWords.length === 0 ? (
-          <div className="text-center py-20 text-gray-500">
-            <p className="text-lg mb-2">没有找到符合条件的单词</p>
-            <p className="text-sm">尝试调整搜索或过滤条件</p>
+          <div className="flex flex-col items-center justify-center h-full text-gray-500 px-6">
+            <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center mb-4">
+              <svg className="w-10 h-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-base font-medium text-gray-700 mb-1">没有找到符合条件的单词</p>
+            <p className="text-sm text-gray-500">尝试调整搜索或过滤条件</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="p-5 space-y-3">
             {filteredAndSortedWords.map((word) => (
               <div
                 key={word.word}
                 onClick={() => onWordClick(word.word)}
-                className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                className="section-card cursor-pointer hover:shadow-soft-lg
+                           hover:scale-[1.01] transition-all duration-200 p-4"
               >
-                <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start justify-between mb-3">
                   {/* 单词和音标 */}
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-800">{word.word}</h3>
-                    <p className="text-sm text-gray-500">{word.phonetic}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-bold text-gray-900 truncate">{word.word}</h3>
+                    <p className="text-sm text-gray-500 mt-0.5">{word.phonetic}</p>
                   </div>
 
                   {/* 掌握程度标签 */}
                   <span
-                    className="px-2 py-1 text-xs rounded flex-shrink-0"
+                    className="badge flex-shrink-0 ml-3"
                     style={{
-                      backgroundColor: MEMORY_COLORS[word.memoryState.level] + '20',
+                      backgroundColor: MEMORY_COLORS[word.memoryState.level] + '15',
                       color: MEMORY_COLORS[word.memoryState.level],
+                      border: `1px solid ${MEMORY_COLORS[word.memoryState.level]}30`
                     }}
                   >
                     {levelNames[word.memoryState.level]}
                   </span>
                 </div>
 
-                {/* 释义预览（只显示前2个）*/}
-                <div className="space-y-1">
+                {/* 释义预览 */}
+                <div className="space-y-1.5">
                   {word.definitions.slice(0, 2).map((def, i) => (
-                    <div key={i} className="text-sm text-gray-700">
-                      <span className="font-semibold text-gray-600">{def.pos}</span>{' '}
-                      <span>{def.meaning}</span>
+                    <div key={i} className="text-sm text-gray-700 flex gap-2">
+                      <span className="font-semibold text-gray-600 flex-shrink-0">{def.pos}</span>
+                      <span className="line-clamp-1">{def.meaning}</span>
                     </div>
                   ))}
                   {word.definitions.length > 2 && (
-                    <p className="text-xs text-gray-500">+{word.definitions.length - 2} 个释义</p>
+                    <p className="text-xs text-gray-500 italic">
+                      +{word.definitions.length - 2} 个释义
+                    </p>
                   )}
                 </div>
               </div>
