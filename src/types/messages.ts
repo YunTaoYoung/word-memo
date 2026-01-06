@@ -12,7 +12,8 @@ export type MessageType =
   | 'VOCABULARY_UPDATED'
   | 'SCROLL_TO_CARD'
   | 'VISIBLE_WORDS_UPDATED'
-  | 'UPDATE_WORD_STYLE';
+  | 'UPDATE_WORD_STYLE'
+  | 'OPEN_SIDEPANEL';
 
 export interface Message<T = any> {
   type: MessageType;

@@ -3,6 +3,7 @@
 import { MemoryLevel } from '@/types';
 import { saveWord, getWordFromVocabulary } from '@/lib/storage';
 import { generateWordExplanation } from './llm-client';
+import { normalizeWord } from '@/lib/word-normalizer';
 
 // 防重复：正在处理的单词集合
 const pendingWords: Set<string> = new Set();
@@ -19,13 +20,16 @@ export async function handleContextMenu(
   const selectedText = info.selectionText?.trim();
   if (!selectedText || !tab?.id) return;
 
-  // 标准化单词（小写 + 去除特殊字符）
-  const word = selectedText.toLowerCase().replace(/[^a-z-]/g, '');
+  // 清理选中文本（去除特殊字符，只保留字母和连字符）
+  const cleanedText = selectedText.toLowerCase().replace(/[^a-z-]/g, '');
 
-  if (!word) {
+  if (!cleanedText) {
     console.error('[Word Memo] Invalid word:', selectedText);
     return;
   }
+
+  // 标准化单词（词形还原：动词→原形，名词→单数）
+  const word = normalizeWord(cleanedText);
 
   // 防重复：检查是否正在处理中
   if (pendingWords.has(word)) {

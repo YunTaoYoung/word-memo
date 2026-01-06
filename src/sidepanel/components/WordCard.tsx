@@ -120,12 +120,23 @@ export default function WordCard({
       className={`
         word-card
         word-card-level-${word.memoryState.level}
-        ${highlighted ? 'ring-4 ring-primary-400 shadow-soft-xl scale-[1.02]' : ''}
-        ${focused ? 'ring-2 ring-primary-300 shadow-soft-lg' : ''}
         ${isDeleting ? 'opacity-50 pointer-events-none' : ''}
         transition-smooth
       `}
-      style={{ borderColor: levelColor }}
+      style={{
+        borderColor: levelColor,
+        ...(highlighted && {
+          outline: `4px solid ${levelColor}`,
+          outlineOffset: '-4px',
+          boxShadow: `0 0 0 4px ${levelColor}33, 0 0 20px ${levelColor}66, 0 10px 40px ${levelColor}44`,
+          transform: 'scale(1.02)',
+        }),
+        ...(focused && !highlighted && {
+          outline: `2px solid ${levelColor}`,
+          outlineOffset: '-2px',
+          boxShadow: `0 0 0 2px ${levelColor}33, 0 0 15px ${levelColor}55`,
+        }),
+      }}
       onClick={handleCardClick}
     >
       {/* Header */}

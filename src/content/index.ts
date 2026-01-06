@@ -3,6 +3,7 @@
 import { getVocabulary } from '@/lib/storage';
 import { normalizeWord } from '@/lib/word-normalizer';
 import type { Message } from '@/types/messages';
+import type { WordData } from '@/types';
 import { showToast, updateToast } from './toast';
 
 /**
@@ -18,7 +19,7 @@ import { showToast, updateToast } from './toast';
  * 7. 监听标签页切换刷新可见单词
  */
 
-let vocabulary: Set<string> = new Set();
+let vocabulary: Map<string, WordData> = new Map();
 let visibleWords: Set<string> = new Set();
 let visibleWordCounters: Map<string, number> = new Map(); // 单词可见性计数器
 let highlightedElements: HTMLElement[] = [];
@@ -92,8 +93,7 @@ async function init() {
 
 // 加载词库
 async function loadVocabulary() {
-  const vocab = await getVocabulary();
-  vocabulary = new Set(vocab.keys());
+  vocabulary = await getVocabulary();
   console.log(`[Word Memo] Loaded ${vocabulary.size} words`);
 }
 
@@ -228,17 +228,22 @@ function highlightWords(
       span.className = 'word-memo-highlight';
       span.dataset.word = match.word;
       span.textContent = text.substring(match.offset, match.offset + match.length);
-      span.style.textDecoration = 'underline wavy #EF4444';
-      span.style.textUnderlineOffset = '2px';
       span.style.cursor = 'pointer';
+
+      // 根据单词的记忆等级动态添加颜色类
+      const wordData = vocabulary.get(match.word);
+      if (wordData) {
+        span.classList.add(`word-memo-level-${wordData.memoryState.level}`);
+      }
 
       // 保存到数组
       highlightedElements.push(span);
 
       // 点击事件 - 不阻止事件传播，允许父元素处理
       span.addEventListener('click', () => {
+        // 请求打开侧边栏并滚动到对应卡片
         chrome.runtime.sendMessage({
-          type: 'SCROLL_TO_CARD',
+          type: 'OPEN_SIDEPANEL',
           payload: { word: match.word },
         });
       });
