@@ -65,20 +65,34 @@
            active:scale-95 transition-all duration-200;
   }
 
-  /* Success Button */
+  /* Success Button - Light & Clean */
   .btn-success {
-    @apply px-4 py-2.5 bg-gradient-to-r from-memory-mastered to-memory-mastered-dark
-           text-white rounded-xl font-medium shadow-soft
-           hover:from-memory-mastered-dark hover:to-memory-mastered
-           hover:shadow-soft-lg active:scale-95 transition-all duration-200;
+    @apply px-4 py-2.5 text-emerald-700 bg-emerald-50 border border-emerald-200
+           rounded-xl font-semibold shadow-soft transition-all duration-300
+           hover:shadow-soft-lg hover:bg-emerald-100 hover:border-emerald-300
+           active:translate-y-0 active:scale-95;
+
+    background-color: #ecfdf5;
+    border-color: #a7f3d0;
   }
 
-  /* Warning Button */
+  /* Warning Button - Light & Warm */
   .btn-warning {
-    @apply px-4 py-2.5 bg-gradient-to-r from-memory-familiar to-memory-familiar-dark
-           text-white rounded-xl font-medium shadow-soft
-           hover:from-memory-familiar-dark hover:to-memory-familiar
-           hover:shadow-soft-lg active:scale-95 transition-all duration-200;
+    @apply px-4 py-2.5 text-amber-700 bg-amber-50 border border-amber-200
+           rounded-xl font-semibold shadow-soft transition-all duration-300
+           hover:shadow-soft-lg hover:bg-amber-100 hover:border-amber-300
+           active:translate-y-0 active:scale-95;
+
+    background-color: #fffbeb;
+    border-color: #fde68a;
+  }
+
+  .btn-warning svg {
+    @apply text-amber-600;
+  }
+
+  .btn-success svg {
+    @apply text-emerald-600;
   }
 
   /* Input Field */

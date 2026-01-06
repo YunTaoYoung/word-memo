@@ -167,7 +167,8 @@ export default function WordCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 ml-3 flex-shrink-0">
+        <div className="flex flex-col items-end gap-1 ml-3 flex-shrink-0">
+          {/* 状态标记 - 上一行 */}
           <span
             className="badge"
             style={{
@@ -178,29 +179,32 @@ export default function WordCard({
           >
             {levelNames[word.memoryState.level]}
           </span>
-          <button
-            onClick={pronounce}
-            className="icon-btn"
-            title="朗读"
-            aria-label="朗读单词"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-            </svg>
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="icon-btn hover:text-red-600 hover:bg-red-50 disabled:opacity-50"
-            title="删除"
-            aria-label="删除单词"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
+          {/* 播放读音和删除按钮 - 下一行，右对齐 */}
+          <div className="flex items-center gap-1.5 justify-end">
+            <button
+              onClick={pronounce}
+              className="icon-btn"
+              title="朗读"
+              aria-label="朗读单词"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              </svg>
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="icon-btn hover:text-red-600 hover:bg-red-50 disabled:opacity-50"
+              title="删除"
+              aria-label="删除单词"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 

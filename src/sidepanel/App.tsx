@@ -13,7 +13,6 @@ type Tab = 'current-page' | 'vocabulary';
 type View = 'list' | 'detail';
 
 export default function App() {
-  const [collapsed, setCollapsed] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [reviewQueue, setReviewQueue] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('current-page');
@@ -102,22 +101,11 @@ export default function App() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </button>
-            <button
-              onClick={() => setCollapsed(!collapsed)}
-              className="icon-btn"
-              title={collapsed ? '展开' : '折叠'}
-              aria-label={collapsed ? '展开侧边栏' : '折叠侧边栏'}
-            >
-              <svg className={`w-5 h-5 transition-transform duration-200 ${collapsed ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-              </svg>
-            </button>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        {!collapsed && (
-          <div className="flex border-t border-gray-200/80">
+        <div className="flex border-t border-gray-200/80">
             <button
               onClick={() => {
                 setActiveTab('current-page');
@@ -137,11 +125,9 @@ export default function App() {
               词库管理
             </button>
           </div>
-        )}
       </header>
 
-      {!collapsed && (
-        <>
+      <>
           {/* Review Reminder */}
           {reviewQueue.length > 0 && settings?.display.showReviewReminder && (
             <div className="bg-gradient-to-r from-amber-50 to-yellow-50 border-b border-amber-200/80 px-5 py-3">
@@ -272,7 +258,6 @@ export default function App() {
             </footer>
           )}
         </>
-      )}
     </div>
   );
 }
