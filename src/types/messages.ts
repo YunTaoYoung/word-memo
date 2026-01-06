@@ -13,7 +13,9 @@ export type MessageType =
   | 'SCROLL_TO_CARD'
   | 'VISIBLE_WORDS_UPDATED'
   | 'UPDATE_WORD_STYLE'
-  | 'OPEN_SIDEPANEL';
+  | 'OPEN_SIDEPANEL'
+  | 'GENERATE_PRACTICE_QUESTION'
+  | 'SELECT_PRACTICE_WORDS';
 
 export interface Message<T = any> {
   type: MessageType;

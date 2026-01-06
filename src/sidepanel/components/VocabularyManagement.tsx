@@ -4,19 +4,26 @@ import { useState, useMemo } from 'react';
 import type { WordData } from '@/types';
 import { MemoryLevel } from '@/types';
 import { MEMORY_COLORS } from '@/lib/constants';
+import { isWordExpired } from '@/lib/memory-algorithm';
 
 interface VocabularyManagementProps {
   words: WordData[];
   onWordClick: (word: string) => void;
+  onPracticeClick: () => void;
 }
 
 type SortOption = 'alpha-asc' | 'alpha-desc' | 'level-asc' | 'level-desc';
 type POSFilter = 'all' | 'n.' | 'v.' | 'adj.' | 'adv.' | 'prep.' | 'conj.' | 'pron.';
 
-export default function VocabularyManagement({ words, onWordClick }: VocabularyManagementProps) {
+export default function VocabularyManagement({ words, onWordClick, onPracticeClick }: VocabularyManagementProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('alpha-asc');
   const [posFilter, setPOSFilter] = useState<POSFilter>('all');
+
+  // 计算可练习的单词数量
+  const practiceableCount = useMemo(() => {
+    return words.filter(w => w.memoryState.level < MemoryLevel.ARCHIVED && isWordExpired(w)).length;
+  }, [words]);
 
   const levelNames = {
     [MemoryLevel.NEW]: '新词',
@@ -68,24 +75,45 @@ export default function VocabularyManagement({ words, onWordClick }: VocabularyM
     <div className="h-full flex flex-col">
       {/* 搜索和过滤栏 */}
       <div className="p-5 glass border-b border-gray-200/80 space-y-3 flex-shrink-0">
-        {/* 搜索框 */}
-        <div className="relative">
-          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="搜索单词或释义..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl
-                       text-gray-900 placeholder-gray-400
-                       focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-                       transition-all duration-200 shadow-inner-soft"
-          />
+        {/* 第一行：搜索框 + 练习按钮 */}
+        <div className="flex gap-3">
+          {/* 搜索框 */}
+          <div className="relative flex-1">
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="搜索单词或释义..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl
+                         text-gray-900 placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+                         transition-all duration-200 shadow-inner-soft"
+            />
+          </div>
+
+          {/* 练习按钮 */}
+          <button
+            onClick={onPracticeClick}
+            disabled={words.length === 0}
+            className="btn-primary flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            练习
+            {practiceableCount > 0 && (
+              <span className="bg-white/20 px-1.5 py-0.5 rounded text-xs">
+                {practiceableCount}
+              </span>
+            )}
+          </button>
         </div>
 
-        {/* 排序和过滤 */}
+        {/* 第二行：排序和过滤 */}
         <div className="grid grid-cols-2 gap-3">
           {/* 排序选择 */}
           <select

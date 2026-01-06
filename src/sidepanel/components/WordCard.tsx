@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { WordData } from '@/types';
 import { MemoryLevel } from '@/types';
-import { handleRemembered, handleNotRemembered } from '@/lib/memory-algorithm';
 import { deleteWord } from '@/lib/storage';
 import { MEMORY_COLORS } from '@/lib/constants';
 
@@ -60,14 +59,6 @@ export default function WordCard({
     [MemoryLevel.LEARNING]: '学习中',
     [MemoryLevel.MASTERED]: '已掌握',
     [MemoryLevel.ARCHIVED]: '已归档',
-  };
-
-  const handleRememberClick = async () => {
-    await handleRemembered(word);
-  };
-
-  const handleNotRememberClick = async () => {
-    await handleNotRemembered(word);
   };
 
   const handleDelete = async () => {
@@ -145,7 +136,7 @@ export default function WordCard({
           {/* 折叠/展开标志 */}
           <button
             onClick={handleToggleClick}
-            className="flex-shrink-0 w-6 h-6 flex items-center justify-center
+            className="flex-shrink-0 self-stretch px-1.5 flex items-center justify-center
                        text-gray-400 hover:text-primary-600 hover:bg-primary-50
                        rounded-lg transition-all duration-200"
             title={focused ? '折叠' : '展开'}
@@ -252,37 +243,6 @@ export default function WordCard({
               <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">词根</span>
               <p className="text-sm text-gray-700 mt-1 leading-relaxed">{word.etymology}</p>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Memory Feedback (聚焦时显示) */}
-      {focused && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-sm text-gray-600 mb-3 font-medium">是否记住了这个单词？</p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={handleRememberClick}
-              className="btn-success text-sm"
-            >
-              <span className="flex items-center justify-center gap-2">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                记住了
-              </span>
-            </button>
-            <button
-              onClick={handleNotRememberClick}
-              className="btn-warning text-sm"
-            >
-              <span className="flex items-center justify-center gap-2">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                还不熟
-              </span>
-            </button>
           </div>
         </div>
       )}

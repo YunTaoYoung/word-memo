@@ -84,3 +84,94 @@ export async function handleNotRemembered(word: WordData): Promise<void> {
 
   chrome.runtime.sendMessage({ type: 'VOCABULARY_UPDATED' });
 }
+
+// ==================== 练习功能 ====================
+
+const MAX_PRACTICE_WORDS = 5;
+const EXPIRING_HOURS_THRESHOLD = 24;
+
+/**
+ * 为练习选择单词（最多5个）
+ * 优先级：
+ * 1. 已过期单词（优先最久没复习的）
+ * 2. 24小时内即将过期单词
+ * 3. 正常复习期内单词
+ * 4. 新词优先
+ */
+export function selectWordsForPractice(vocabulary: WordData[]): WordData[] {
+  const now = Date.now();
+
+  const candidates = vocabulary
+    .filter(w => w.memoryState.level < MemoryLevel.ARCHIVED)
+    .map(w => {
+      const nextReview = new Date(w.memoryState.nextReviewDate).getTime();
+      const overdueHours = (now - nextReview) / (1000 * 60 * 60);
+
+      let priority: number;
+      if (overdueHours > 0) {
+        priority = 0; // 已过期
+      } else if (overdueHours > -EXPIRING_HOURS_THRESHOLD) {
+        priority = 1; // 24小时内到期
+      } else {
+        priority = 2; // 正常复习期
+      }
+
+      // 新词（从未复习）在同组中优先
+      if (w.memoryState.reviewCount === 0) {
+        priority -= 0.5;
+      }
+
+      return { word: w.word, data: w, priority, overdueHours };
+    });
+
+  // 按优先级排序
+  candidates.sort((a, b) => {
+    if (a.priority !== b.priority) return a.priority - b.priority;
+    return a.overdueHours - b.overdueHours;
+  });
+
+  return candidates.slice(0, MAX_PRACTICE_WORDS).map(c => c.data);
+}
+
+/**
+ * 检查单词是否已过期（可以升级）
+ */
+export function isWordExpired(word: WordData): boolean {
+  const now = Date.now();
+  const nextReview = new Date(word.memoryState.nextReviewDate).getTime();
+  return now > nextReview;
+}
+
+/**
+ * 练习答题后更新单词状态
+ * - 答对 + 已过期：升级
+ * - 答对 + 未过期：仅记录正确
+ * - 答错：降级
+ */
+export async function updateWordAfterPractice(
+  word: WordData,
+  isCorrect: boolean
+): Promise<void> {
+  word.memoryState.reviewCount++;
+
+  if (isCorrect) {
+    word.memoryState.correctCount++;
+    // 只有已过期才升级
+    if (isWordExpired(word)) {
+      word.memoryState.level = upgradeLevel(word.memoryState.level);
+    }
+  } else {
+    // 答错降级
+    word.memoryState.level = downgradeLevel(word.memoryState.level);
+  }
+
+  word.memoryState.lastReviewDate = new Date();
+  word.memoryState.nextReviewDate = calculateNextReview(
+    word.memoryState.level,
+    isCorrect
+  );
+  word.updatedDate = new Date();
+
+  await saveWord(word);
+  chrome.runtime.sendMessage({ type: 'VOCABULARY_UPDATED' });
+}

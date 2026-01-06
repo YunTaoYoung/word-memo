@@ -1,6 +1,9 @@
 // src/background/message-handler.ts
 
 import type { Message } from '@/types/messages';
+import { generatePracticeQuestion } from './llm-client';
+import { selectWordsForPractice } from '@/lib/memory-algorithm';
+import { getVocabulary } from '@/lib/storage';
 
 /**
  * 消息处理路由
@@ -8,7 +11,7 @@ import type { Message } from '@/types/messages';
 export function handleMessage(
   message: Message,
   sender: chrome.runtime.MessageSender,
-  _sendResponse: (response?: any) => void
+  sendResponse: (response?: any) => void
 ): boolean {
   console.log('[Word Memo] Message received:', message.type, message.payload);
 
@@ -44,9 +47,57 @@ export function handleMessage(
       }
       break;
 
+    case 'GENERATE_PRACTICE_QUESTION':
+      // 生成练习题目
+      handleGeneratePracticeQuestion(message.payload)
+        .then((question) => {
+          sendResponse({ question });
+        })
+        .catch((error) => {
+          sendResponse({ error: error.message });
+        });
+      return true; // 异步响应
+
+    case 'SELECT_PRACTICE_WORDS':
+      // 选词
+      handleSelectPracticeWords()
+        .then((words) => {
+          sendResponse({ words });
+        })
+        .catch((error) => {
+          sendResponse({ error: error.message });
+        });
+      return true; // 异步响应
+
     default:
       console.warn('[Word Memo] Unknown message type:', message.type);
   }
 
   return false; // 同步响应
+}
+
+/**
+ * 处理生成练习题目请求
+ */
+async function handleGeneratePracticeQuestion(payload: {
+  word: string;
+  wordData: {
+    definitions: { pos: string; meaning: string }[];
+    examples: { en: string; zh: string }[];
+  };
+  type: 'choice' | 'fill';
+}) {
+  const { word, wordData, type } = payload;
+  const question = await generatePracticeQuestion(word, wordData, type);
+  return question;
+}
+
+/**
+ * 处理选词请求
+ */
+async function handleSelectPracticeWords() {
+  const vocabulary = await getVocabulary();
+  const wordsArray = Array.from(vocabulary.values());
+  const words = selectWordsForPractice(wordsArray);
+  return words;
 }

@@ -5,12 +5,13 @@ import Settings from './components/Settings';
 import WordList from './components/WordList';
 import VocabularyManagement from './components/VocabularyManagement';
 import WordDetail from './components/WordDetail';
+import PracticeMode from './components/PracticeMode';
 import { useWordStore } from './hooks/useWordStore';
 import { useSettings } from './hooks/useSettings';
 import { getReviewQueue } from '@/lib/storage';
 
 type Tab = 'current-page' | 'vocabulary';
-type View = 'list' | 'detail';
+type View = 'list' | 'detail' | 'practice';
 
 export default function App() {
   const [showSettings, setShowSettings] = useState(false);
@@ -47,6 +48,11 @@ export default function App() {
   const handleWordClick = (wordText: string) => {
     setSelectedWord(wordText);
     setCurrentView('detail');
+  };
+
+  // 开始练习
+  const handlePracticeClick = () => {
+    setCurrentView('practice');
   };
 
   // 返回列表
@@ -222,7 +228,11 @@ export default function App() {
                 {activeTab === 'vocabulary' && (
                   <>
                     {currentView === 'list' && (
-                      <VocabularyManagement words={words} onWordClick={handleWordClick} />
+                      <VocabularyManagement
+                        words={words}
+                        onWordClick={handleWordClick}
+                        onPracticeClick={handlePracticeClick}
+                      />
                     )}
                     {currentView === 'detail' && selectedWordData && (
                       <WordDetail
@@ -230,6 +240,20 @@ export default function App() {
                         onBack={handleBackToList}
                         onDeleted={handleWordDeleted}
                       />
+                    )}
+                    {currentView === 'practice' && (
+                      <div className="p-5">
+                        <PracticeMode />
+                        <button
+                          onClick={() => {
+                            setCurrentView('list');
+                            reload();
+                          }}
+                          className="btn-secondary mt-4 w-full"
+                        >
+                          返回词库
+                        </button>
+                      </div>
                     )}
                   </>
                 )}

@@ -99,3 +99,45 @@ export interface MatchResult {
   offset: number;         // 在文本节点中的偏移量
   length: number;         // 单词长度
 }
+
+// ==================== 练习功能类型 ====================
+
+/**
+ * 题目类型
+ */
+export type QuestionType = 'choice' | 'fill';
+
+/**
+ * 练习题目
+ */
+export interface PracticeQuestion {
+  id: string;
+  word: string;
+  type: QuestionType;
+  question: string;       // 题干
+  options?: string[];     // 选择题选项（4选1）
+  correctAnswer: string;  // 正确答案
+  explanation: string;    // 解析
+}
+
+/**
+ * 练习会话
+ */
+export interface PracticeSession {
+  id: string;
+  questions: PracticeQuestion[];
+  currentIndex: number;
+  correctCount: number;
+  startedAt: Date;
+}
+
+/**
+ * 练习记录（用于统计）
+ */
+export interface PracticeRecord {
+  sessionId: string;
+  word: string;
+  type: QuestionType;
+  isCorrect: boolean;
+  answeredAt: Date;
+}

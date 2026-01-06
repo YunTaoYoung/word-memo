@@ -130,6 +130,26 @@
   .tab-btn-inactive {
     @apply text-gray-600 hover:text-gray-900 hover:bg-gray-50;
   }
+
+  /* Option Button for Practice */
+  .option-btn {
+    @apply w-full flex items-center px-4 py-3 bg-white border border-gray-200
+           rounded-xl text-gray-700 text-left
+           hover:bg-gray-50 hover:border-gray-300 hover:shadow-soft
+           active:scale-[0.99] transition-all duration-200;
+  }
+
+  .option-btn.correct {
+    @apply bg-green-50 border-green-300 text-green-800;
+  }
+
+  .option-btn.wrong {
+    @apply bg-red-50 border-red-300 text-red-800;
+  }
+
+  .option-btn:disabled {
+    @apply cursor-default;
+  }
 }
 
 @layer utilities {

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import type { WordData } from '@/types';
 import { MemoryLevel } from '@/types';
-import { handleRemembered, handleNotRemembered } from '@/lib/memory-algorithm';
 import { deleteWord } from '@/lib/storage';
 import { MEMORY_COLORS } from '@/lib/constants';
 
@@ -24,14 +23,6 @@ export default function WordDetail({ word, onBack, onDeleted }: WordDetailProps)
     [MemoryLevel.LEARNING]: '学习中',
     [MemoryLevel.MASTERED]: '已掌握',
     [MemoryLevel.ARCHIVED]: '已归档',
-  };
-
-  const handleRememberClick = async () => {
-    await handleRemembered(word);
-  };
-
-  const handleNotRememberClick = async () => {
-    await handleNotRemembered(word);
   };
 
   const handleDelete = async () => {
@@ -184,7 +175,7 @@ export default function WordDetail({ word, onBack, onDeleted }: WordDetailProps)
           )}
 
           {/* Memory Stats */}
-          <div className="pt-6 border-t border-gray-200 mb-6">
+          <div className="pt-6 border-t border-gray-200">
             <div className="flex items-center gap-2 mb-4">
               <svg className="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -212,35 +203,6 @@ export default function WordDetail({ word, onBack, onDeleted }: WordDetailProps)
                   {new Date(word.memoryState.nextReviewDate).toLocaleDateString()}
                 </p>
               </div>
-            </div>
-          </div>
-
-          {/* Memory Feedback */}
-          <div className="pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-700 mb-4 font-semibold">是否记住了这个单词？</p>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={handleRememberClick}
-                className="btn-success"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  记住了
-                </span>
-              </button>
-              <button
-                onClick={handleNotRememberClick}
-                className="btn-warning"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  还不熟
-                </span>
-              </button>
             </div>
           </div>
         </div>
