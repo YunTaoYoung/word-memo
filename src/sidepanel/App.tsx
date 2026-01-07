@@ -232,6 +232,7 @@ export default function App() {
                         words={words}
                         onWordClick={handleWordClick}
                         onPracticeClick={handlePracticeClick}
+                        onReload={reload}
                       />
                     )}
                     {currentView === 'detail' && selectedWordData && (

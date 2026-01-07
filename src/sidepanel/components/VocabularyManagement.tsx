@@ -5,21 +5,25 @@ import type { WordData } from '@/types';
 import { MemoryLevel } from '@/types';
 import { MEMORY_COLORS } from '@/lib/constants';
 import { isWordExpired, calculateNextReview } from '@/lib/memory-algorithm';
-import { saveWord } from '@/lib/storage';
+import { saveWord, exportVocabularyToYAML, importVocabularyFromYAML, type ImportConflictStrategy } from '@/lib/storage';
 
 interface VocabularyManagementProps {
   words: WordData[];
   onWordClick: (word: string) => void;
   onPracticeClick: () => void;
+  onReload: () => void;
 }
 
 type SortOption = 'alpha-asc' | 'alpha-desc' | 'level-asc' | 'level-desc';
 type POSFilter = 'all' | 'n.' | 'v.' | 'adj.' | 'adv.' | 'prep.' | 'conj.' | 'pron.';
 
-export default function VocabularyManagement({ words, onWordClick, onPracticeClick }: VocabularyManagementProps) {
+export default function VocabularyManagement({ words, onWordClick, onPracticeClick, onReload }: VocabularyManagementProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState<SortOption>('alpha-asc');
   const [posFilter, setPOSFilter] = useState<POSFilter>('all');
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
   // 计算可练习的单词数量
   const practiceableCount = useMemo(() => {
@@ -159,11 +163,62 @@ export default function VocabularyManagement({ words, onWordClick, onPracticeCli
     return result;
   }, [words, searchQuery, sortOption, posFilter]);
 
+  // Toast 自动消失
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  // 导出词库
+  const handleExport = async () => {
+    try {
+      await exportVocabularyToYAML();
+      setToast({ type: 'success', message: `已导出 ${words.length} 个单词` });
+    } catch (error) {
+      setToast({ type: 'error', message: `导出失败：${String(error)}` });
+    }
+  };
+
+  // 导入词库
+  const handleImport = async (strategy: ImportConflictStrategy) => {
+    setImporting(true);
+    try {
+      const result = await importVocabularyFromYAML(strategy);
+      if (result.success) {
+        setToast({
+          type: 'success',
+          message: `成功导入 ${result.importedCount} 个单词${result.skippedCount > 0 ? `，跳过 ${result.skippedCount} 个` : ''}`,
+        });
+        onReload(); // 刷新列表
+      } else {
+        setToast({ type: 'error', message: `导入失败：${result.errors.join('; ')}` });
+      }
+    } catch (error) {
+      setToast({ type: 'error', message: `导入失败：${String(error)}` });
+    } finally {
+      setImporting(false);
+      setShowImportModal(false);
+    }
+  };
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
+      {/* Toast 通知 */}
+      {toast && (
+        <div className={`fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in ${
+          toast.type === 'success' ? 'bg-green-500 text-white' :
+          toast.type === 'error' ? 'bg-red-500 text-white' :
+          'bg-blue-500 text-white'
+        }`}>
+          {toast.message}
+        </div>
+      )}
+
       {/* 搜索和过滤栏 */}
       <div className="p-5 glass border-b border-gray-200/80 space-y-3 flex-shrink-0">
-        {/* 第一行：搜索框 + 练习按钮 */}
+        {/* 第一行：搜索框 + 按钮组 */}
         <div className="flex gap-3">
           {/* 搜索框 */}
           <div className="relative flex-1">
@@ -181,6 +236,31 @@ export default function VocabularyManagement({ words, onWordClick, onPracticeCli
                          transition-all duration-200 shadow-inner-soft"
             />
           </div>
+
+          {/* 导出按钮 */}
+          <button
+            onClick={handleExport}
+            disabled={words.length === 0}
+            className="btn-secondary flex items-center gap-2 whitespace-nowrap"
+            title="导出为 YAML 文件"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            导出
+          </button>
+
+          {/* 导入按钮 */}
+          <button
+            onClick={() => setShowImportModal(true)}
+            className="btn-secondary flex items-center gap-2 whitespace-nowrap"
+            title="从 YAML 文件导入"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            导入
+          </button>
 
           {/* 练习按钮 */}
           <button
@@ -295,6 +375,63 @@ export default function VocabularyManagement({ words, onWordClick, onPracticeCli
           </div>
         )}
       </div>
+
+      {/* 导入模态框 */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">导入词库</h3>
+
+            <p className="text-sm text-gray-600 mb-4">
+              选择导入时遇到重复单词的处理方式：
+            </p>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handleImport('skip')}
+                disabled={importing}
+                className="w-full p-4 text-left border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <div className="font-medium text-gray-900">跳过</div>
+                <div className="text-sm text-gray-500">保留已有的单词，不导入重复项</div>
+              </button>
+
+              <button
+                onClick={() => handleImport('overwrite')}
+                disabled={importing}
+                className="w-full p-4 text-left border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <div className="font-medium text-gray-900">覆盖</div>
+                <div className="text-sm text-gray-500">用导入的数据替换已有的单词，但保留记忆状态</div>
+              </button>
+
+              <button
+                onClick={() => handleImport('merge')}
+                disabled={importing}
+                className="w-full p-4 text-left border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <div className="font-medium text-gray-900">合并</div>
+                <div className="text-sm text-gray-500">取两者的并集，保留已有的释义和例句</div>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowImportModal(false)}
+              disabled={importing}
+              className="w-full mt-4 btn-secondary"
+            >
+              取消
+            </button>
+
+            {importing && (
+              <div className="flex items-center justify-center gap-2 mt-4 text-gray-600">
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-primary-500 rounded-full animate-spin" />
+                <span className="text-sm">正在导入...</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

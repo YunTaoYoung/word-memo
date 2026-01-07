@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Memo Test - Technology Article</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      line-height: 1.8;
+      color: #333;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 50px;
+      border-radius: 12px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #1a1a2e;
+      margin-bottom: 10px;
+      border-bottom: 3px solid #4361ee;
+      padding-bottom: 20px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 1.2em;
+      margin-bottom: 40px;
+    }
+    h2 {
+      font-size: 1.8em;
+      color: #16213e;
+      margin: 40px 0 20px;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+    p {
+      margin-bottom: 20px;
+      text-align: justify;
+    }
+    .highlight-info {
+      background: #f0f4ff;
+      border-left: 4px solid #4361ee;
+      padding: 20px;
+      margin: 30px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .highlight-info h3 {
+      color: #4361ee;
+      margin-bottom: 10px;
+    }
+    code {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Consolas', monospace;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    blockquote {
+      border-left: 4px solid #4361ee;
+      padding: 20px 30px;
+      margin: 30px 0;
+      background: #f8f9ff;
+      font-style: italic;
+    }
+    ul, ol {
+      margin: 20px 0;
+      padding-left: 40px;
+    }
+    li {
+      margin: 10px 0;
+    }
+    .long-content {
+      height: 2000px;
+      background: linear-gradient(180deg, #fff 0%, #f0f4ff 100%);
+      padding: 40px;
+      margin-top: 40px;
+      border-radius: 8px;
+    }
+    .nav {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .nav a {
+      display: block;
+      margin: 5px 0;
+      color: #4361ee;
+      text-decoration: none;
+    }
+    .nav a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <strong>页面导航</strong>
+    <a href="#section1">第一部分</a>
+    <a href="#section2">第二部分</a>
+    <a href="#section3">第三部分</a>
+    <a href="#long">长内容测试</a>
+  </div>
+
+  <div class="container">
+    <h1>The Future of Artificial Intelligence</h1>
+    <p class="subtitle">Exploring the Transformative Potential of Machine Learning and Neural Networks</p>
+
+    <div class="highlight-info">
+      <h3>测试说明</h3>
+      <p>此页面包含各种英语文章，用于测试单词高亮功能。请确保在词库中添加以下单词以测试高亮效果：<br>
+      <strong>algorithm, computer, data, intelligence, machine, neural, network, processing, software, technology</strong></p>
+    </div>
+
+    <h2 id="section1">Introduction to Machine Learning</h2>
+    <p>
+      Machine learning represents a fundamental paradigm shift in how we approach problem-solving with computer systems.
+      Unlike traditional programming approaches that rely on explicit instructions, machine learning algorithms enable computers
+      to learn patterns directly from data. This revolutionary approach has transformed industries ranging from healthcare to finance,
+      creating unprecedented opportunities for innovation and efficiency.
+    </p>
+    <p>
+      The core concept behind machine learning is simple yet powerful: instead of telling a computer exactly what to do,
+      we provide it with examples and let it discover the underlying patterns itself. Through sophisticated algorithms and
+      massive computational resources, modern systems can now process vast amounts of information and extract meaningful insights
+      that would be impossible for humans to identify manually.
+    </p>
+
+    <h2 id="section2">Neural Networks and Deep Learning</h2>
+    <p>
+      Neural networks represent one of the most exciting developments in artificial intelligence research.
+      Modeled loosely after the human brain's structure, these computational systems consist of interconnected nodes
+      organized in layers that process information in parallel. Each connection between nodes carries weight,
+      which determines how much influence one node has on another.
+    </p>
+    <blockquote>
+      "The true sign of intelligence is not knowledge but imagination." This perspective encourages us to think beyond
+      current limitations and envision possibilities that haven't yet been realized in our algorithms and systems.
+    </blockquote>
+    <p>
+      Deep learning, a subset of machine learning, utilizes networks with many hidden layers to achieve remarkable
+      results in image recognition, natural language processing, and speech synthesis. The depth of these networks
+      enables them to learn hierarchical representations of data, from simple features to complex concepts.
+    </p>
+
+    <h3>Key Applications</h3>
+    <ul>
+      <li><strong>Computer Vision:</strong> Enabling machines to interpret and understand visual information from the world around them</li>
+      <li><strong>Natural Language Processing:</strong> Allowing computers to understand, interpret, and generate human language</li>
+      <li><strong>Autonomous Systems:</strong> Powering self-driving vehicles and intelligent robots that navigate complex environments</li>
+      <li><strong>Healthcare Diagnostics:</strong> Assisting medical professionals in detecting diseases and planning treatments</li>
+    </ul>
+
+    <h2 id="section3">Challenges and Ethical Considerations</h2>
+    <p>
+      Despite the tremendous progress in artificial intelligence, significant challenges remain.
+      Training sophisticated models requires enormous computational resources and vast amounts of labeled data.
+      Additionally, ensuring that these systems behave ethically and make fair decisions presents ongoing research challenges.
+    </p>
+    <p>
+      The development of responsible AI systems requires careful attention to issues of bias, transparency, and accountability.
+      As these technologies become more integrated into everyday life, it becomes increasingly important to establish
+      robust frameworks for their ethical deployment and governance.
+    </p>
+
+    <h3>Technical Implementation Example</h3>
+    <pre><code>
+function trainNeuralNetwork(trainingData, epochs) {
+  const network = initializeNetwork();
+
+  for (let epoch = 0; epoch < epochs; epoch++) {
+    let totalLoss = 0;
+
+    for (const sample of trainingData) {
+      const prediction = forwardPass(network, sample.input);
+      const loss = calculateLoss(prediction, sample.output);
+      totalLoss += loss;
+      backwardPass(network, loss);
+    }
+
+    console.log(`Epoch ${epoch}: Average Loss = ${totalLoss / trainingData.length}`);
+  }
+
+  return network;
+}
+    </code></pre>
+
+    <p>
+      The algorithm above demonstrates the basic structure of neural network training, including forward propagation,
+      loss calculation, and backpropagation. Each epoch represents one complete pass through the training dataset,
+      during which the network gradually improves its predictions through gradient descent optimization.
+    </p>
+
+    <h2 id="long">Extended Content for Scroll Testing</h2>
+    <p>
+      This section contains additional content specifically designed to test the visibility tracking functionality.
+      Scroll down to see how the plugin tracks which words are currently visible in the viewport.
+    </p>
+    <p>
+      The field of artificial intelligence continues to evolve at a remarkable pace. Researchers around the world
+      are pushing the boundaries of what machines can accomplish, developing new architectures and training techniques
+      that improve performance while reducing computational requirements.
+    </p>
+    <p>
+      One particularly promising direction involves reinforcement learning, where agents learn through interaction
+      with their environment rather than from static datasets. This approach has led to remarkable achievements in
+      games, robotics, and autonomous decision-making systems.
+    </p>
+    <p>
+      The future of AI holds tremendous potential for addressing complex global challenges, from climate change
+      to disease prevention. By augmenting human capabilities rather than replacing them, these technologies can
+      help us achieve goals that were previously beyond our reach.
+    </p>
+    <p>
+      However, realizing this potential requires thoughtful development and deployment. We must ensure that AI
+      systems are developed responsibly, with careful attention to their impact on society and individual privacy.
+    </p>
+    <p>
+      As we look to the future, collaboration between researchers, policymakers, and the public will be essential
+      in shaping how these technologies develop and how they are applied in practice. The decisions we make today
+      will have lasting implications for generations to come.
+    </p>
+    <p>
+      The integration of AI into everyday life continues to accelerate. From smart home devices that learn our
+      preferences to recommendation systems that help us discover new content, these technologies are becoming
+      increasingly invisible yet profoundly influential in shaping our experiences.
+    </p>
+    <p>
+      In education, adaptive learning systems can personalize instruction to meet individual student needs,
+      identifying struggling learners early and providing targeted interventions. This represents a fundamental
+      shift in how we think about educational delivery and student support.
+    </p>
+    <p>
+      The transportation sector is being revolutionized by autonomous vehicle technology. Companies are racing
+      to develop self-driving cars that can navigate complex urban environments safely and efficiently, promising
+      to reduce accidents caused by human error and transform how we think about personal mobility.
+    </p>
+    <p>
+      In the realm of scientific research, AI is accelerating discovery by helping researchers analyze vast
+      datasets and identify patterns that might otherwise remain hidden. From drug discovery to materials science,
+      these tools are enabling scientists to explore new frontiers at unprecedented speed.
+    </p>
+    <p>
+      Environmental applications of AI are also showing promise. Machine learning models can analyze satellite
+      imagery to track deforestation, predict weather patterns affected by climate change, and optimize energy
+      grids for maximum efficiency and minimum environmental impact.
+    </p>
+    <p>
+      The creative industries are also experiencing transformation through AI. Generative models can produce
+      art, music, and writing that challenges our notions of creativity and authorship. While these developments
+      raise important questions, they also open new avenues for human expression and artistic exploration.
+    </p>
+    <p>
+      Despite the many opportunities, significant challenges remain in developing robust and reliable AI systems.
+      Ensuring that machine learning models behave consistently across different situations and populations requires
+      careful attention to testing, validation, and ongoing monitoring.
+    </p>
+    <p>
+      The path forward will require continued investment in research, education, and infrastructure. By building
+      strong foundations in computer science and data literacy, society can better understand and guide the
+      development of these powerful technologies.
+    </p>
+    <p>
+      Ultimately, the success of AI will be measured not just by technological achievements but by how well these
+      tools serve human needs and values. Keeping this perspective at the forefront of development efforts will
+      be essential for creating a future where AI genuinely improves lives.
+    </p>
+    <div class="long-content">
+      <h3>Bottom Section - Long Content Area</h3>
+      <p>You have scrolled a long way! This section tests the plugin's ability to track visible words as you scroll through lengthy content.</p>
+      <p>The artificial intelligence field encompasses many sub-disciplines and approaches, each with unique strengths and applications.</p>
+      <p>Machine learning provides the foundation for many modern AI applications, enabling systems to improve their performance through experience.</p>
+      <p>Neural networks have proven particularly effective for tasks involving complex patterns, such as image and speech recognition.</p>
+      <p>Data science combines statistical analysis with computational methods to extract insights from large datasets.</p>
+      <p>The synergy between human intelligence and artificial systems creates possibilities that neither could achieve alone.</p>
+    </div>
+  </div>
+</body>
+</html>
