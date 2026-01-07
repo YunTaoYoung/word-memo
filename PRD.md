@@ -436,6 +436,132 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 ---
 
+### 2.5 练习模式系统（V1.1新增）
+
+#### 2.5.1 练习入口与流程
+
+**触发方式**: 词库管理Tab → "开始练习"按钮
+
+**练习界面**:
+```
+┌─────────────────────────────────┐
+│ 练习 (3/5)          正确: 2    │
+├─────────────────────────────────┤
+│                                 │
+│  "ephemeral" 在以下哪个场景中   │
+│  使用最合适？                    │
+│                                 │
+│  [A] 永久存储的数据              │
+│  [B] 临时存储的数据              │
+│  [C] 加密存储的数据              │
+│  [D] 分布式存储的数据            │
+│                                 │
+│  ✅ 正确！                       │
+│  正确答案: B                     │
+│  ephemeral 意为"短暂的、瞬息的"， │
+│  通常用于描述临时存储或短期有效   │
+│  的内容。                        │
+│                                 │
+│                    [下一题]     │
+└─────────────────────────────────┘
+```
+
+**业务规则**:
+- ✅ 每次练习最多5道选择题
+- ✅ 优先选择过期单词（超过复习时间）
+- ✅ 24小时内即将过期的单词次之
+- ✅ 答对已过期单词可升级
+- ✅ 答错直接降级
+- ✅ 题目缓存24小时，避免重复生成
+
+#### 2.5.2 智能选题算法
+
+```typescript
+/**
+ * 为练习选择单词（最多5个）
+ * 优先级：
+ * 1. 已过期单词（优先最久没复习的）
+ * 2. 24小时内即将过期单词
+ * 3. 正常复习期内单词
+ * 4. 新词优先
+ */
+function selectWordsForPractice(vocabulary: WordData[]): WordData[] {
+  const now = Date.now();
+  const EXPIRING_HOURS_THRESHOLD = 24;
+
+  const candidates = vocabulary
+    .filter(w => w.memoryState.level < MemoryLevel.ARCHIVED)
+    .map(w => {
+      const nextReview = new Date(w.memoryState.nextReviewDate).getTime();
+      const overdueHours = (now - nextReview) / (1000 * 60 * 60);
+
+      let priority: number;
+      if (overdueHours > 0) {
+        priority = 0; // 已过期 - 最高优先级
+      } else if (overdueHours > -EXPIRING_HOURS_THRESHOLD) {
+        priority = 1; // 24小时内到期
+      } else {
+        priority = 2; // 正常复习期
+      }
+
+      // 新词（从未复习）在同组中优先
+      if (w.memoryState.reviewCount === 0) {
+        priority -= 0.5;
+      }
+
+      return { word: w.word, data: w, priority, overdueHours };
+    });
+
+  // 按优先级排序
+  candidates.sort((a, b) => {
+    if (a.priority !== b.priority) return a.priority - b.priority;
+    return a.overdueHours - b.overdueHours;
+  });
+
+  return candidates.slice(0, 5).map(c => c.data);
+}
+```
+
+#### 2.5.3 题目生成（LLM）
+
+**Prompt模板**:
+```typescript
+const PRACTICE_PROMPT = `
+请为单词 "{word}" 生成一道选择题。
+
+要求：
+1. 基于以下释义和例句生成题目
+2. 题干描述一个场景，让用户选择最合适的单词用法
+3. 提供4个选项（A、B、C、D），其中1个正确，3个干扰项
+4. 干扰项应该是语义相近但含义不同的词汇
+
+释义：
+{definitions}
+
+例句：
+{examples}
+
+请以JSON格式返回：
+{
+  "question": "题目题干",
+  "options": ["选项A", "选项B", "选项C", "选项D"],
+  "correctAnswer": "正确选项",
+  "explanation": "答案解析"
+}
+`;
+```
+
+#### 2.5.4 练习状态更新
+
+**答题规则**:
+| 答题情况 | 单词等级 | 复习时间 |
+|----------|----------|----------|
+| 答对 + 已过期 | 升级 | 推迟 |
+| 答对 + 未过期 | 不变 | 不变 |
+| 答错 | 降级 | 提前 |
+
+---
+
 ### 3. 页面扫描与高亮系统
 
 #### 3.1 实时扫描机制
@@ -1497,7 +1623,20 @@ graph TD
 
 ---
 
-### Phase 3: V2.0（未来） - 增强版
+### Phase 1.5: V1.1（已实现）- 练习模式
+**新增功能**（2026年1月）:
+
+✅ **练习功能**:
+- 单词练习模式（选择题形式）
+- 每次最多5道题，优先选择需要复习的单词
+- 智能选题算法（过期单词优先）
+- 答题反馈与解析
+- 答对已过期单词可升级，答错降级
+- 题目缓存机制（避免重复生成）
+
+---
+
+### Phase 2: V2.0（未来） - 增强版
 **可选功能**（根据用户反馈优先级排序）:
 
 🔮 **高级功能**:
