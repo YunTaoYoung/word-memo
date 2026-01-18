@@ -1,6 +1,6 @@
 // src/sidepanel/hooks/useWordStore.ts
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import type { WordData } from '@/types';
 import { getVocabulary } from '@/lib/storage';
 
