@@ -1,0 +1,165 @@
+/* src/sidepanel/styles/index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+}
+
+@layer components {
+  /* Word Card - Modern Design */
+  .word-card {
+    @apply bg-white rounded-2xl shadow-soft border-l-4 p-5 mb-4
+           transition-all duration-300 hover:shadow-soft-lg;
+  }
+
+  .word-card-level-0 {
+    @apply border-memory-new bg-gradient-to-br from-white to-memory-new-light/20;
+  }
+
+  .word-card-level-1 {
+    @apply border-memory-familiar bg-gradient-to-br from-white to-memory-familiar-light/20;
+  }
+
+  .word-card-level-2 {
+    @apply border-memory-learning bg-gradient-to-br from-white to-memory-learning-light/20;
+  }
+
+  .word-card-level-3 {
+    @apply border-memory-mastered bg-gradient-to-br from-white to-memory-mastered-light/20;
+  }
+
+  /* Icon Button */
+  .icon-btn {
+    @apply p-2 rounded-lg hover:bg-gray-100 active:bg-gray-200
+           transition-colors duration-200 text-gray-600 hover:text-gray-900;
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply px-4 py-2.5 bg-gradient-to-r from-primary-500 to-primary-600
+           text-white rounded-xl font-medium shadow-soft
+           hover:from-primary-600 hover:to-primary-700 hover:shadow-soft-lg
+           active:scale-95 transition-all duration-200;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    @apply px-4 py-2.5 bg-white text-gray-700 rounded-xl font-medium
+           border border-gray-300 shadow-soft
+           hover:bg-gray-50 hover:border-gray-400 hover:shadow-soft-lg
+           active:scale-95 transition-all duration-200;
+  }
+
+  /* Success Button - Light & Clean */
+  .btn-success {
+    @apply px-4 py-2.5 text-emerald-700 bg-emerald-50 border border-emerald-200
+           rounded-xl font-semibold shadow-soft transition-all duration-300
+           hover:shadow-soft-lg hover:bg-emerald-100 hover:border-emerald-300
+           active:translate-y-0 active:scale-95;
+
+    background-color: #ecfdf5;
+    border-color: #a7f3d0;
+  }
+
+  /* Warning Button - Light & Warm */
+  .btn-warning {
+    @apply px-4 py-2.5 text-amber-700 bg-amber-50 border border-amber-200
+           rounded-xl font-semibold shadow-soft transition-all duration-300
+           hover:shadow-soft-lg hover:bg-amber-100 hover:border-amber-300
+           active:translate-y-0 active:scale-95;
+
+    background-color: #fffbeb;
+    border-color: #fde68a;
+  }
+
+  .btn-warning svg {
+    @apply text-amber-600;
+  }
+
+  .btn-success svg {
+    @apply text-emerald-600;
+  }
+
+  /* Input Field */
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-white border border-gray-300 rounded-xl
+           text-gray-900 placeholder-gray-400
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           transition-all duration-200 shadow-inner-soft;
+  }
+
+  /* Badge */
+  .badge {
+    @apply px-3 py-1 text-xs font-medium rounded-full;
+  }
+
+  /* Section Card */
+  .section-card {
+    @apply bg-white rounded-2xl shadow-soft-lg p-6 border border-gray-100;
+  }
+
+  /* Tab Button */
+  .tab-btn {
+    @apply flex-1 px-4 py-3 text-sm font-semibold transition-all duration-200 relative;
+  }
+
+  .tab-btn-active {
+    @apply text-primary-600 bg-primary-50;
+  }
+
+  .tab-btn-active::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600;
+  }
+
+  .tab-btn-inactive {
+    @apply text-gray-600 hover:text-gray-900 hover:bg-gray-50;
+  }
+
+  /* Option Button for Practice */
+  .option-btn {
+    @apply w-full flex items-center px-4 py-3 bg-white border border-gray-200
+           rounded-xl text-gray-700 text-left
+           hover:bg-gray-50 hover:border-gray-300 hover:shadow-soft
+           active:scale-[0.99] transition-all duration-200;
+  }
+
+  .option-btn.correct {
+    @apply bg-green-50 border-green-300 text-green-800;
+  }
+
+  .option-btn.wrong {
+    @apply bg-red-50 border-red-300 text-red-800;
+  }
+
+  .option-btn:disabled {
+    @apply cursor-default;
+  }
+}
+
+@layer utilities {
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-sm;
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Edit",
+      "Bash(npm run build)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm install:*)",
+      "mcp__sequential-thinking__sequentialthinking",
+      "mcp__browsermcp__browser_*"
+    ]
+  }
+}

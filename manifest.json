@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Word Memo - 词汇记忆助手",
+  "version": "1.0.0",
+  "description": "非侵入式英文阅读辅助与AI驱动的词汇记忆管理工具",
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "sidePanel",
+    "alarms",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.ts"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/index.ts"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "side_panel": {
+    "default_path": "src/sidepanel/index.html"
+  }
+}

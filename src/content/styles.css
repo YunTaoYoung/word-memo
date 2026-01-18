@@ -1,0 +1,44 @@
+/* src/content/styles.css */
+
+/* 词库单词高亮样式 */
+.word-memo-highlight {
+  cursor: pointer;
+  transition: background-color 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.word-memo-highlight:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* 不同记忆等级的下划线样式 */
+.word-memo-level-0 {
+  text-decoration: wavy underline #EF4444 2px;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
+}
+
+.word-memo-level-1 {
+  text-decoration: solid underline #F59E0B 2px;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
+}
+
+.word-memo-level-2 {
+  text-decoration: dashed underline #EAB308 2px;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
+}
+
+.word-memo-level-3 {
+  text-decoration: dotted underline #22C55E 2px;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
+}
+
+.word-memo-level-4 {
+  text-decoration: dotted underline #9CA3AF 2px;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
+}

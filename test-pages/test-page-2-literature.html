@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Memo Test - Literature Article</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 2;
+      color: #2c2c2c;
+      background: #faf9f7;
+      padding: 40px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 60px;
+      border-radius: 4px;
+      box-shadow: 0 1px 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      font-size: 2.8em;
+      color: #1a1a1a;
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 400;
+      letter-spacing: 2px;
+    }
+    .author {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      margin-bottom: 50px;
+      font-size: 1.1em;
+    }
+    h2 {
+      font-size: 1.6em;
+      color: #333;
+      margin: 50px 0 25px;
+      font-weight: 400;
+      text-align: center;
+    }
+    h3 {
+      font-size: 1.3em;
+      color: #444;
+      margin: 40px 0 20px;
+      font-weight: 400;
+    }
+    p {
+      margin-bottom: 25px;
+      text-indent: 2em;
+    }
+    .highlight-info {
+      background: #f5f5f0;
+      padding: 25px 30px;
+      margin: 40px 0;
+      border-left: 3px solid #8b7355;
+    }
+    .highlight-info h3 {
+      margin-top: 0;
+      color: #5c4d3c;
+    }
+    blockquote {
+      font-style: italic;
+      padding: 20px 40px;
+      margin: 35px 0;
+      color: #555;
+      border-left: 2px solid #ccc;
+      background: #fafafa;
+    }
+    .verse {
+      text-align: center;
+      padding: 30px;
+      margin: 30px 0;
+      font-size: 1.1em;
+      color: #444;
+    }
+    .dialogue {
+      padding: 20px 40px;
+      margin: 25px 0;
+      font-style: italic;
+    }
+    .dialogue .speaker {
+      font-weight: bold;
+      font-style: normal;
+      color: #5c4d3c;
+    }
+    ul, ol {
+      margin: 25px 0;
+      padding-left: 50px;
+    }
+    li {
+      margin: 12px 0;
+    }
+    .long-content {
+      height: 1800px;
+      background: linear-gradient(180deg, #fff 0%, #f5f5f0 100%);
+      padding: 40px;
+      margin-top: 40px;
+      border-radius: 4px;
+    }
+    .nav {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      padding: 15px 20px;
+      border-radius: 4px;
+      box-shadow: 0 1px 10px rgba(0,0,0,0.1);
+      font-size: 0.9em;
+    }
+    .nav strong {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .nav a {
+      display: block;
+      margin: 5px 0;
+      color: #8b7355;
+      text-decoration: none;
+    }
+    .nav a:hover {
+      text-decoration: underline;
+    }
+    .chapter-break {
+      text-align: center;
+      margin: 50px 0;
+      font-size: 2em;
+      color: #ccc;
+      letter-spacing: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <strong>页面导航</strong>
+    <a href="#intro">引言</a>
+    <a href="#chapter1">第一章</a>
+    <a href="#chapter2">第二章</a>
+    <a href="#reflection">思考</a>
+    <a href="#long">长内容</a>
+  </div>
+
+  <div class="container">
+    <h1>The Art of Reflection</h1>
+    <p class="author">A Literary Essay on Memory, Time, and Understanding</p>
+
+    <div class="highlight-info">
+      <h3>测试说明</h3>
+      <p>此页面包含文学类英语文章，用于测试插件的各种功能。请在词库中添加以下单词以测试高亮效果：<br>
+      <strong>character, culture, literature, memory, narrative, story, symbol, theme, tradition, wisdom</strong></p>
+    </div>
+
+    <h2 id="intro">Introduction</h2>
+    <p>
+      Literature has always served as a mirror through which humanity examines itself, exploring the depths of
+      human experience with a nuance and depth that few other mediums can achieve. Through the careful arrangement
+      of words and the construction of narrative, authors create worlds that reflect our own, offering insights
+      into the human condition that transcend time and cultural boundaries.
+    </p>
+    <p>
+      The power of storytelling lies in its ability to connect us with experiences beyond our own. When we read
+      about characters facing challenges similar to our own, we find solace in shared humanity. When we encounter
+      narratives from cultures distant from our own, we develop empathy and understanding that enriches our perspective.
+    </p>
+
+    <div class="chapter-break">* * *</div>
+
+    <h2 id="chapter1">Chapter One: The Nature of Memory</h2>
+    <p>
+      Memory shapes who we are, creating the narrative thread that connects our past selves to our present
+      identities. Yet memory is not a faithful recorder of events but rather a creative process that constantly
+      reconstructs and interprets our experiences. This understanding has profound implications for how we
+      understand both personal identity and historical narrative.
+    </p>
+    <blockquote>
+      "We do not remember days, we remember moments." The truth of this observation lies in its recognition
+      that memory selects and elevates certain experiences while allowing others to fade into background noise.
+    </blockquote>
+    <p>
+      In literature, the treatment of memory often reveals much about a character's inner life. Authors use
+      flashbacks, souvenirs, and carefully chosen details to externalize the workings of memory, allowing
+      readers to witness how the past continues to influence the present.
+    </p>
+
+    <h3>The Role of Tradition</h3>
+    <p>
+      Cultural tradition provides the framework through which we interpret our experiences and understand our place
+      in the world. Folklore, mythology, and oral histories carry the accumulated wisdom of generations,
+      encoding lessons about human nature and social behavior in forms that endure across centuries.
+    </p>
+    <p>
+      The tension between tradition and innovation drives much of literary narrative. Characters often find
+      themselves at crossroads where inherited values conflict with new understanding, forcing them to negotiate
+      between the wisdom of the past and the demands of the present moment.
+    </p>
+
+    <div class="dialogue">
+      <p>"But how can we honor our ancestors while still moving forward?" she asked, her voice carrying the weight of generations.</p>
+      <p>"Perhaps," he replied thoughtfully, "we honor them not by preserving their answers but by continuing their questions."</p>
+    </div>
+
+    <div class="chapter-break">* * *</div>
+
+    <h2 id="chapter2">Chapter Two: The Symbol and the Story</h2>
+    <p>
+      Effective literature operates on multiple levels, engaging readers through plot while simultaneously
+      exploring deeper themes through symbol and metaphor. The symbol serves as a bridge between the literal
+      and the figurative, allowing complex ideas to be conveyed through concrete images that resonate emotionally.
+    </p>
+    <p>
+      Consider how light functions in narrative tradition. From ancient mythology to modern literature, light
+      consistently symbolizes knowledge, truth, and spiritual awakening. Darkness, its opposite, represents
+      ignorance, uncertainty, and the unconscious. These archetypal patterns persist because they speak to
+      fundamental aspects of human experience.
+    </p>
+
+    <h3>The Development of Character</h3>
+    <p>
+      Character development lies at the heart of meaningful narrative. The most memorable characters in literature
+      are those who change, who grow through their experiences, and who emerge transformed by the challenges
+      they face. This transformation need not be positive; characters may also grow worse, becoming corrupted
+      by their experiences or defeated by their circumstances.
+    </p>
+    <p>
+      The depth of a character often reveals itself through small details: a habit of speech, a recurring gesture,
+      an preference that hints at deeper psychological truths. Authors who understand this principle create
+      characters that feel real because they possess the contradictions and complexities of actual human beings.
+    </p>
+
+    <h3>The Structure of Narrative</h3>
+    <p>
+      Every story follows some structure, whether consciously chosen or unconsciously adopted. The circular
+      narrative returns to its starting point, suggesting the cyclical nature of human experience. The linear
+      narrative moves inexorably forward, reflecting modern assumptions about progress and development.
+    </p>
+    <ul>
+      <li><strong>The Quest:</strong> A journey undertaken to achieve a goal, with obstacles and revelations along the way</li>
+      <li><strong>The Transformation:</strong> A character who changes fundamentally through their experiences</li>
+      <li><strong>The Tragedy:</strong> A narrative that explores the consequences of hubris or error</li>
+      <li><strong>The Revelation:</strong> A story structured around the uncovering of hidden truth</li>
+    </ul>
+
+    <div class="chapter-break">* * *</div>
+
+    <h2 id="reflection">Chapter Three: The Reader's Role</h2>
+    <p>
+      Literature does not exist in isolation but comes alive through the act of reading. Each reader brings
+      their own experiences, knowledge, and emotional landscape to a text, creating a unique interpretation
+      that would be impossible to predict or control. This collaborative nature of meaning-making gives
+      literature its enduring power and relevance.
+    </p>
+    <blockquote>
+      "A book is a mirror that reflects what is already within the reader." This insight suggests that our
+      engagement with literature is ultimately a form of self-discovery, a process through which we come
+      to understand ourselves more deeply by encountering our reflections in the narratives we consume.
+    </blockquote>
+    <p>
+      The interpretation of theme requires active engagement from readers. Authors may plant seeds of meaning,
+      but it falls to readers to nurture those seeds into full understanding. This is why literature rewards
+      re-reading; each encounter reveals new layers and deeper insights that escaped notice in previous readings.
+    </p>
+
+    <h3>The Wisdom of Literature</h3>
+    <p>
+      Throughout history, literature has served as a repository of human wisdom, preserving insights about
+      love, loss, ambition, and redemption in forms that transcend their original contexts. The ancient Greek
+      tragedies still move modern audiences because they address universal truths about human nature that
+      remain relevant regardless of technological or social change.
+    </p>
+    <p>
+      Yet literature also captures the specific texture of particular times and places, documenting the
+      distinctive concerns of different cultures and historical moments. This dual nature, simultaneously
+      universal and particular, gives literature its unique power to both transcend and illuminate human experience.
+    </p>
+
+    <div class="verse">
+      <p>The page awaits the reader's eye,</p>
+      <p>The story sleeps within each word,</p>
+      <p>Until the gentle breath of attention</p>
+      <p>Awakens meaning, word by word.</p>
+    </div>
+
+    <div class="chapter-break">* * *</div>
+
+    <h2 id="long">Extended Reading: A Continued Exploration</h2>
+    <p>
+      This extended section provides additional content for testing the plugin's visibility tracking and
+      scroll-based functionality. As you continue reading, consider how the themes explored earlier manifest
+      in the unfolding narrative of your own life and experience.
+    </p>
+    <p>
+      The study of literature offers more than aesthetic pleasure or intellectual stimulation. It provides
+      a training ground for empathy, allowing us to inhabit perspectives radically different from our own
+      and to understand motivations that might otherwise remain mysterious or threatening.
+    </p>
+    <p>
+      In an age of rapid technological change and information overload, the slow, contemplative engagement
+      that literature demands becomes increasingly valuable. The ability to focus attention, to follow complex
+      arguments, and to appreciate nuance and subtlety are skills that literature helps us develop and refine.
+    </p>
+    <p>
+      The intersection of culture and individual expression creates the dynamic tension that animates all
+      creative work. Each artist works within a tradition while simultaneously pushing against its boundaries,
+      honoring what has come before while seeking to extend and transform inherited forms.
+    </p>
+    <p>
+      Understanding requires patience and attention. We cannot rush to comprehension, cannot force meaning
+      to reveal itself before it is ready. The process of understanding unfolds in its own time, requiring
+      us to remain open and receptive to insights that emerge gradually from sustained engagement.
+    </p>
+    <p>
+      The narrative of our own lives follows patterns that literature helps us recognize and understand.
+      We are all protagonists in our own stories, facing challenges, experiencing growth, and seeking meaning
+      in the events that shape our existence. Literature provides models and alternatives, showing us possibilities
+      we might not have imagined otherwise.
+    </p>
+    <p>
+      The symbol remains one of literature's most powerful tools, allowing complex ideas to be communicated
+      through simple images that resonate across cultural boundaries. A storm at sea can suggest emotional turmoil,
+      a journey can represent spiritual development, a rose can embody both beauty and transience.
+    </p>
+    <p>
+      Time in literature operates differently than in lived experience. Authors can compress years into pages,
+      expand moments into chapters, and move backward and forward through chronological sequence. This flexibility
+      allows writers to structure their narratives for maximum emotional and thematic impact.
+    </p>
+    <p>
+      The wisdom of age and the energy of youth create complementary forces in both life and literature.
+      The tension between these different perspectives drives character development and plot progression,
+      creating the dynamic movement that keeps narrative alive and engaging.
+    </p>
+    <p>
+      Memory and anticipation shape our experience of the present moment. We interpret current experiences
+      through the lens of remembered pasts and imagined futures, creating narratives that give coherence and
+      meaning to the flow of consciousness. Literature explores these temporal dimensions with particular depth.
+    </p>
+    <p>
+      The relationship between individual and society has been a central concern of literature since its
+      earliest manifestations. Characters must navigate social expectations while pursuing personal desires,
+      creating tensions that drive narrative and illuminate fundamental aspects of human experience.
+    </p>
+    <p>
+      Culture provides the vocabulary through which we understand ourselves and our world. The stories we tell,
+      the symbols we create, and the traditions we maintain all contribute to the symbolic systems that give
+      meaning to our experiences and guide our actions.
+    </p>
+    <p>
+      Reflection requires distance, the space between experience and interpretation that allows for thought
+      and insight. Literature creates this space, offering perspectives that are impossible to achieve in
+      the midst of lived experience but become available through the mediation of narrative.
+    </p>
+    <p>
+      The story continues, as all stories must, beyond the boundaries of any particular text. The narratives
+      we read become part of our own narratives, contributing to the ongoing story of human experience that
+      each of us participates in through the simple act of living.
+    </p>
+    <div class="long-content">
+      <h3>Final Section - End of Extended Content</h3>
+      <p>Thank you for reading through this extended content. This section helps test how the plugin handles long-form scrolling and viewport detection.</p>
+      <p>The character of great literature lies in its ability to speak across time, connecting readers separated by centuries through shared human experience.</p>
+      <p>Every culture develops its own narrative traditions, adapted to local circumstances while addressing universal themes of human existence.</p>
+      <p>The theme of redemption appears repeatedly in literature because it speaks to deep human needs for meaning and transformation.</p>
+      <p>Story has always served as a vehicle for cultural transmission, preserving wisdom and values across generations of readers.</p>
+      <p>The symbol of the journey pervades literature because it mirrors the human experience of moving through time and facing challenges.</p>
+      <p>Memory and forgetting are twin forces that shape both individual identity and collective culture in ways that literature explores with depth.</p>
+      <p>The interplay between tradition and innovation creates the dynamic energy that drives cultural and literary development.</p>
+    </div>
+  </div>
+</body>
+</html>
